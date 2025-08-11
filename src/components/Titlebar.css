@@ -2,13 +2,14 @@
   position: fixed;
   top: 0;
   left: 0;
-  right: 0;
+  width: 100vw;
   height: 32px;
   background-color: var(--bg-paper);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0 var(--spacing-sm);
+  padding: 0;
+  padding-left: var(--spacing-sm);
   z-index: 10000;
   user-select: none;
   -webkit-user-select: none;
