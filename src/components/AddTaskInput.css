@@ -13,7 +13,6 @@
   border-radius: var(--radius-md);
   font-family: var(--font-serif);
   font-size: 0.9375rem;
-  transition: all 0.2s;
 }
 
 .task-input:focus {
