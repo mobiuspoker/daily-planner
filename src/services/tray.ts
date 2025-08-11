@@ -58,14 +58,15 @@ export async function setupTrayMenu() {
     await tray.setMenu(menu);
     
     // Handle tray click
-    tray.onClick(async () => {
-      const window = getCurrentWindow();
-      const isVisible = await window.isVisible();
-      if (!isVisible) {
-        await window.show();
-        await window.setFocus();
-      }
-    });
+    // Note: onClick is not available in current Tauri version
+    // tray.onClick(async () => {
+    //   const window = getCurrentWindow();
+    //   const isVisible = await window.isVisible();
+    //   if (!isVisible) {
+    //     await window.show();
+    //     await window.setFocus();
+    //   }
+    // });
     
     // Handle window close to minimize to tray
     const window = getCurrentWindow();

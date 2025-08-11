@@ -1,5 +1,6 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Minus, Square, X } from "lucide-react";
+import iconPath from "../assets/icon.png";
 import "./Titlebar.css";
 
 export function Titlebar() {
@@ -20,7 +21,8 @@ export function Titlebar() {
   return (
     <div className="titlebar" data-tauri-drag-region>
       <div className="titlebar-title" data-tauri-drag-region>
-        Task Planner
+        <img src={iconPath} alt="Daily Planner" className="titlebar-icon" />
+        <span>Daily Planner</span>
       </div>
       <div className="titlebar-controls">
         <button

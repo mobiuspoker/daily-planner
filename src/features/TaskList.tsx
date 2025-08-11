@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -18,7 +18,7 @@ import {
 import { TaskItem } from "../components/TaskItem";
 import { AddTaskInput } from "../components/AddTaskInput";
 import { useTaskStore } from "../state/taskStore";
-import { Task, TaskList as TaskListType } from "../types/task";
+import { TaskList as TaskListType } from "../types/task";
 import "./TaskList.css";
 
 interface TaskListProps {

@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Task Planner",
+  "productName": "Daily Planner",
   "version": "0.1.0",
   "identifier": "com.patrick.task-planner",
   "build": {
@@ -13,7 +13,7 @@
     "withGlobalTauri": true,
     "windows": [
       {
-        "title": "Task Planner",
+        "title": "Daily Planner",
         "width": 700,
         "height": 800,
         "minWidth": 500,
@@ -34,7 +34,7 @@
     "trayIcon": {
       "id": "main",
       "iconPath": "icons/icon.png",
-      "tooltip": "Task Planner",
+      "tooltip": "Daily Planner",
       "menuOnLeftClick": false
     }
   },

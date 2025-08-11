@@ -17,11 +17,20 @@
 
 .titlebar-title {
   flex: 1;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
   font-family: var(--font-serif);
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   padding-left: var(--spacing-sm);
   cursor: default;
+}
+
+.titlebar-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
 }
 
 .titlebar-controls {

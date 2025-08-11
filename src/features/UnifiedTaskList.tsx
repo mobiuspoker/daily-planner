@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import {
   DndContext,
   DragEndEvent,
@@ -19,11 +19,10 @@ import { TaskItem } from "../components/TaskItem";
 import { AddTaskInput } from "../components/AddTaskInput";
 import { TaskEditModal } from "../components/TaskEditModal";
 import { useTaskStore } from "../state/taskStore";
-import { Task, TaskList as TaskListType } from "../types/task";
 import "./UnifiedTaskList.css";
 
 export function UnifiedTaskList() {
-  const { tasks, reorderTasks, toggleTask, moveTask, updateTask } = useTaskStore();
+  const { tasks, reorderTasks, toggleTask, updateTask } = useTaskStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   
@@ -46,9 +45,6 @@ export function UnifiedTaskList() {
       .sort((a, b) => a.sortIndex - b.sortIndex);
   }, [tasks]);
   
-  const allTasks = useMemo(() => {
-    return [...todayTasks, ...futureTasks];
-  }, [todayTasks, futureTasks]);
   
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
@@ -64,7 +60,7 @@ export function UnifiedTaskList() {
       if (activeTask && overTask) {
         // If moving between lists
         if (activeTask.list !== overTask.list) {
-          await moveTask(active.id as string, overTask.list);
+          await updateTask(active.id as string, { list: overTask.list });
         }
         
         // Reorder within the same list

@@ -3,7 +3,7 @@ import { getDatabase } from "../db/database";
 import { useTaskStore } from "../state/taskStore";
 import { sendNotification } from "@tauri-apps/plugin-notification";
 
-let midnightTimeout: NodeJS.Timeout | null = null;
+let midnightTimeout: number | null = null;
 
 export async function setupMidnightClear() {
   // Schedule the next midnight clear

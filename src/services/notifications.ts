@@ -2,7 +2,7 @@ import { sendNotification, requestPermission, isPermissionGranted } from "@tauri
 import { DateTime } from "luxon";
 import { useTaskStore } from "../state/taskStore";
 
-let notificationInterval: NodeJS.Timeout | null = null;
+let notificationInterval: number | null = null;
 const notifiedTasks = new Set<string>();
 
 export async function setupNotifications() {
