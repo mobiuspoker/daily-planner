@@ -139,6 +139,12 @@
   font-size: 0.875rem;
   line-height: 0.5;
   letter-spacing: 2px;
+  opacity: 0;
+  transition: opacity 0.15s;
+}
+
+.task-item:hover .drag-handle {
+  opacity: 1;
 }
 
 .drag-handle:hover {

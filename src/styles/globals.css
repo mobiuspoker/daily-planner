@@ -51,7 +51,7 @@
   --color-bg-tertiary: #282828;
   --color-text: #e9ecef;
   --color-text-secondary: #9a9a9a;
-  --color-border: #373a40;
+  --color-border: #333333;
   --color-primary: #4c6ef5;
   --color-primary-hover: #5c7cfa;
   --color-success: #51cf66;
@@ -131,7 +131,7 @@ input, textarea {
 }
 
 input:focus, textarea:focus {
-  border-color: var(--color-text-secondary);
+  border-color: var(--color-border);
   outline: none;
 }
 

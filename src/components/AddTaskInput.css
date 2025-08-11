@@ -17,7 +17,7 @@
 }
 
 .task-input:focus {
-  border-color: var(--color-text-secondary);
+  border-color: var(--color-border);
   box-shadow: none;
   outline: none;
 }

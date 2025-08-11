@@ -9,6 +9,7 @@ import { setupNotifications } from "./services/notifications";
 import { setupMidnightClear, triggerMidnightClear } from "./services/midnightClear";
 import { setupGlobalHotkey, cleanupGlobalHotkey } from "./services/globalHotkey";
 import { DateTime } from "luxon";
+import { Moon, Sun } from "lucide-react";
 import "./styles/App.css";
 
 function App() {
@@ -49,35 +50,13 @@ function App() {
     <div className={`app ${theme}`}>
       <header className="app-header">
         <h1>{currentDate}</h1>
-        <div style={{ display: "flex", gap: "0.5rem" }}>
-          <button 
-            className="theme-toggle"
-            onClick={() => setIsQuickAddOpen(true)}
-            aria-label="Quick add"
-            title="Quick Add (Ctrl+Shift+A)"
-          >
-            ➕
-          </button>
-          <button 
-            className="theme-toggle"
-            onClick={async () => {
-              if (confirm("Archive completed Today tasks? Incomplete tasks will remain in Today.")) {
-                await triggerMidnightClear();
-              }
-            }}
-            aria-label="Clear today"
-            title="Archive completed tasks"
-          >
-            🗓️
-          </button>
-          <button 
-            className="theme-toggle"
-            onClick={() => useThemeStore.getState().toggleTheme()}
-            aria-label="Toggle theme"
-          >
-            {theme === "light" ? "🌙" : "☀️"}
-          </button>
-        </div>
+        <button 
+          className="theme-toggle"
+          onClick={() => useThemeStore.getState().toggleTheme()}
+          aria-label="Toggle theme"
+        >
+          {theme === "light" ? <Moon size={20} /> : <Sun size={20} />}
+        </button>
       </header>
       
       <main className="app-main">

@@ -22,12 +22,12 @@
 }
 
 .quick-add-modal {
-  background-color: color-mix(in oklab, var(--color-bg) 85%, transparent);
+  background-color: var(--bg-paper);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
-  border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
+  border: 1px solid var(--line-color);
   border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: none;
   width: 90%;
   max-width: 500px;
   animation: slideUp 0.2s ease;
@@ -49,13 +49,13 @@
   justify-content: space-between;
   align-items: center;
   padding: var(--spacing-lg);
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--line-color);
 }
 
 .quick-add-header h3 {
   margin: 0;
   font-size: 1.25rem;
-  color: var(--color-text);
+  color: var(--text-primary);
   font-family: var(--font-serif);
 }
 
@@ -74,7 +74,11 @@
 }
 
 .close-button:hover {
-  background-color: var(--color-bg-tertiary);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .close-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .quick-add-content {
@@ -86,14 +90,14 @@
   padding: var(--spacing-md);
   font-family: var(--font-serif);
   font-size: 1rem;
-  background-color: var(--color-bg-secondary);
-  border: 2px solid var(--color-border);
+  background-color: var(--color-bg);
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   margin-bottom: var(--spacing-md);
 }
 
 .quick-add-input:focus {
-  border-color: var(--color-text-secondary);
+  border-color: var(--color-border);
   outline: none;
   box-shadow: none;
 }
@@ -115,19 +119,23 @@
 }
 
 .list-option:hover {
-  background-color: var(--color-bg-secondary);
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+[data-theme="dark"] .list-option:hover {
+  background-color: rgba(255, 255, 255, 0.03);
 }
 
 .list-option input[type="radio"] {
   width: 1.25rem;
   height: 1.25rem;
-  accent-color: var(--color-primary);
+  accent-color: var(--ink-sage);
 }
 
 .list-option span {
   font-family: var(--font-serif);
   font-size: 0.9375rem;
-  color: var(--color-text);
+  color: var(--text-primary);
 }
 
 .quick-add-footer {
@@ -143,7 +151,7 @@
 
 .quick-add-footer .add-button {
   padding: var(--spacing-sm) var(--spacing-lg);
-  background-color: var(--color-primary);
+  background-color: var(--ink-sage);
   color: white;
   border-radius: var(--radius-md);
   font-weight: 500;
@@ -151,7 +159,8 @@
 }
 
 .quick-add-footer .add-button:hover:not(:disabled) {
-  background-color: var(--color-primary-hover);
+  background-color: var(--ink-sage);
+  opacity: 0.9;
 }
 
 .quick-add-footer .add-button:disabled {

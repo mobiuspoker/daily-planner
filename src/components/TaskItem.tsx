@@ -2,15 +2,22 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { Task } from "../types/task";
 import { DateTime } from "luxon";
+import { useState } from "react";
+import { ContextMenu } from "./ContextMenu";
+import { useTaskStore } from "../state/taskStore";
+import { Forward, Edit2, Trash2 } from "lucide-react";
 import "./TaskItem.css";
 
 interface TaskItemProps {
   task: Task;
   onToggle?: () => void;
   isDragging?: boolean;
+  onEdit?: () => void;
 }
 
-export function TaskItem({ task, onToggle, isDragging }: TaskItemProps) {
+export function TaskItem({ task, onToggle, isDragging, onEdit }: TaskItemProps) {
+  const [contextMenu, setContextMenu] = useState<{ x: number; y: number } | null>(null);
+  const { updateTask, deleteTask } = useTaskStore();
   const {
     attributes,
     listeners,
@@ -58,12 +65,47 @@ export function TaskItem({ task, onToggle, isDragging }: TaskItemProps) {
     );
   }
   
+  const handleContextMenu = (e: React.MouseEvent) => {
+    e.preventDefault();
+    setContextMenu({ x: e.clientX, y: e.clientY });
+  };
+
+  const handleMoveTask = () => {
+    const newList = task.list === "TODAY" ? "FUTURE" : "TODAY";
+    updateTask(task.id, { list: newList });
+  };
+
+  const handleDelete = () => {
+    deleteTask(task.id);
+  };
+
+  const contextMenuItems = [
+    {
+      label: task.list === "TODAY" ? "Move to Future" : "Move to Today",
+      onClick: handleMoveTask,
+      icon: Forward,
+    },
+    {
+      label: "Edit",
+      onClick: () => onEdit?.(),
+      icon: Edit2,
+    },
+    {
+      label: "Delete",
+      onClick: handleDelete,
+      icon: Trash2,
+      className: "danger",
+    },
+  ];
+
   return (
-    <div
-      ref={setNodeRef}
-      style={style}
-      className={`task-item ${task.completed ? "completed" : ""}`}
-    >
+    <>
+      <div
+        ref={setNodeRef}
+        style={style}
+        className={`task-item ${task.completed ? "completed" : ""}`}
+        onContextMenu={handleContextMenu}
+      >
       <button
         className="task-checkbox"
         onClick={onToggle}
@@ -87,6 +129,14 @@ export function TaskItem({ task, onToggle, isDragging }: TaskItemProps) {
           ⋮⋮
         </div>
       )}
-    </div>
+      </div>
+      {contextMenu && (
+        <ContextMenu
+          items={contextMenuItems}
+          position={contextMenu}
+          onClose={() => setContextMenu(null)}
+        />
+      )}
+    </>
   );
 }

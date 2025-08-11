@@ -17,13 +17,15 @@ import {
 } from "@dnd-kit/sortable";
 import { TaskItem } from "../components/TaskItem";
 import { AddTaskInput } from "../components/AddTaskInput";
+import { TaskEditModal } from "../components/TaskEditModal";
 import { useTaskStore } from "../state/taskStore";
 import { Task, TaskList as TaskListType } from "../types/task";
 import "./UnifiedTaskList.css";
 
 export function UnifiedTaskList() {
-  const { tasks, reorderTasks, toggleTask, moveTask } = useTaskStore();
+  const { tasks, reorderTasks, toggleTask, moveTask, updateTask } = useTaskStore();
   const [activeId, setActiveId] = useState<string | null>(null);
+  const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   
   const sensors = useSensors(
     useSensor(PointerSensor),
@@ -107,6 +109,7 @@ export function UnifiedTaskList() {
                     key={task.id}
                     task={task}
                     onToggle={() => toggleTask(task.id)}
+                    onEdit={() => setEditingTaskId(task.id)}
                   />
                 ))}
               </SortableContext>
@@ -130,6 +133,7 @@ export function UnifiedTaskList() {
                     key={task.id}
                     task={task}
                     onToggle={() => toggleTask(task.id)}
+                    onEdit={() => setEditingTaskId(task.id)}
                   />
                 ))}
               </SortableContext>
@@ -143,6 +147,14 @@ export function UnifiedTaskList() {
           ) : null}
         </DragOverlay>
       </DndContext>
+      
+      {editingTaskId && (
+        <TaskEditModal
+          task={tasks.find(t => t.id === editingTaskId)!}
+          isOpen={true}
+          onClose={() => setEditingTaskId(null)}
+        />
+      )}
     </div>
   );
 }
