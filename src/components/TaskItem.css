@@ -1,13 +1,12 @@
 .task-item {
-  grid-row: span var(--rows, 1);
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
+  display: flex;
   align-items: center;
   gap: var(--spacing-md);
   padding: 0 var(--spacing-md);
   min-height: var(--paper-line-step);
+  height: var(--paper-line-step);
   background: transparent;
   border: 0;
   margin: 0;

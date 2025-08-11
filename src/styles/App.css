@@ -49,18 +49,14 @@
 }
 
 .task-container {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-xl);
-  max-width: 1200px;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  max-width: 800px;
   margin: 0 auto;
 }
 
 @media (max-width: 768px) {
-  .task-container {
-    grid-template-columns: 1fr;
-  }
-  
   .app-header {
     padding: var(--spacing-md) var(--spacing-lg);
   }

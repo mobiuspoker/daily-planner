@@ -1,7 +1,7 @@
 .add-task-input {
   display: flex;
   gap: var(--spacing-sm);
-  margin-bottom: calc(var(--paper-line-step) * 0.5);
+  margin-bottom: var(--spacing-md);
   transition: all 0.2s;
 }
 

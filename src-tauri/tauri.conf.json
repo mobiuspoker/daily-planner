@@ -14,9 +14,9 @@
     "windows": [
       {
         "title": "Task Planner",
-        "width": 900,
-        "height": 700,
-        "minWidth": 600,
+        "width": 700,
+        "height": 800,
+        "minWidth": 500,
         "minHeight": 400,
         "center": true,
         "decorations": true,

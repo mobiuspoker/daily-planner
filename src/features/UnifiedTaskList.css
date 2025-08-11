@@ -1,0 +1,65 @@
+.unified-task-list {
+  background-color: var(--bg-paper);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  min-height: 600px;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.unified-task-list-content {
+  flex: 1;
+  position: relative;
+}
+
+.task-section {
+  position: relative;
+  margin-bottom: var(--spacing-xl);
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+}
+
+.section-header h3 {
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+}
+
+.section-count {
+  background-color: rgba(0, 0, 0, 0.05);
+  color: var(--color-text-secondary);
+  padding: 2px 8px;
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .section-count {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.section-tasks {
+  position: relative;
+  min-height: calc(var(--paper-line-step) * 3);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--line-color),
+    var(--line-color) var(--paper-line-thickness),
+    transparent var(--paper-line-thickness),
+    transparent var(--paper-line-step)
+  );
+  background-position: 0 0;
+  padding: 0;
+}
+

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { TaskList } from "./features/TaskList";
+import { UnifiedTaskList } from "./features/UnifiedTaskList";
 import { QuickAddModal } from "./components/QuickAddModal";
 import { useThemeStore } from "./state/themeStore";
 import { useTaskStore } from "./state/taskStore";
@@ -82,8 +82,7 @@ function App() {
       
       <main className="app-main">
         <div className="task-container">
-          <TaskList type="TODAY" />
-          <TaskList type="FUTURE" />
+          <UnifiedTaskList />
         </div>
       </main>
       
