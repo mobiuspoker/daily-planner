@@ -164,7 +164,28 @@ export async function updateTask(id: string, input: UpdateTaskInput): Promise<Ta
 
 export async function deleteTask(id: string): Promise<void> {
   const db = getDatabase();
+  
+  // First, get the task details for more precise history deletion
+  const tasks = await db.select<any[]>(
+    "SELECT title, completed_at, list FROM tasks WHERE id = ?",
+    [id]
+  );
+  
+  // Delete from active tasks
   await db.execute("DELETE FROM tasks WHERE id = ?", [id]);
+  
+  // Also delete from history if it exists there
+  // Match by title, source_list, and approximate completed_at to be more precise
+  if (tasks.length > 0 && tasks[0].completed_at) {
+    const task = tasks[0];
+    await db.execute(
+      `DELETE FROM task_history 
+       WHERE title = ? 
+       AND source_list = ? 
+       AND completed_at = ?`,
+      [task.title, task.list, task.completed_at]
+    );
+  }
 }
 
 export async function reorderTasks(

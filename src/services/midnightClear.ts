@@ -56,6 +56,11 @@ async function performMidnightClear() {
     
     // Process completed TODAY tasks
     for (const task of completedTodayTasks) {
+      // Use the task's completion date as the cleared_on date
+      const clearedOn = task.completed_at
+        ? DateTime.fromISO(task.completed_at).toLocal().toISODate()
+        : today;
+      
       // Archive to history with source list
       await db.execute(
         `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
@@ -65,7 +70,7 @@ async function performMidnightClear() {
           "TODAY", 
           task.title,
           task.completed_at,
-          today!,
+          clearedOn!,
           now!
         ]
       );
@@ -79,6 +84,11 @@ async function performMidnightClear() {
     
     // Process completed FUTURE tasks
     for (const task of completedFutureTasks) {
+      // Use the task's completion date as the cleared_on date
+      const clearedOn = task.completed_at
+        ? DateTime.fromISO(task.completed_at).toLocal().toISODate()
+        : today;
+      
       // Archive to history with source list
       await db.execute(
         `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
@@ -88,7 +98,7 @@ async function performMidnightClear() {
           "FUTURE", 
           task.title,
           task.completed_at,
-          today!,
+          clearedOn!,
           now!
         ]
       );
@@ -143,4 +153,9 @@ export async function triggerMidnightClear() {
       }
     }
   }, 100);
+}
+
+// Alias for menu action
+export async function runMidnightClear() {
+  return triggerMidnightClear();
 }

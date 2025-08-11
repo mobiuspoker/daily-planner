@@ -1,0 +1,168 @@
+.app-menu {
+  position: relative;
+}
+
+.menu-trigger {
+  background: transparent;
+  border: none;
+  color: var(--color-text);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.2s ease;
+}
+
+.menu-trigger:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.menu-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  background: var(--color-bg-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 240px;
+  max-height: calc(100vh - 100px);  /* Prevent extending beyond viewport */
+  overflow-y: auto;  /* Allow scrolling if content is too tall */
+  overflow-x: visible;  /* Allow submenus to extend horizontally */
+  padding: 8px;
+  z-index: 1000;
+  animation: menuSlideIn 0.2s ease;
+  /* Ensure solid background */
+  backdrop-filter: none;
+}
+
+@keyframes menuSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.menu-section {
+  padding: 4px 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  position: relative;
+  font-size: 14px;
+}
+
+.menu-item:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.menu-item.has-submenu {
+  position: relative;
+  /* Ensure submenu can overflow */
+  overflow: visible;
+}
+
+.submenu-arrow {
+  margin-left: auto;
+  opacity: 0.6;
+}
+
+.submenu {
+  /* Position is set inline via JavaScript */
+  background: var(--color-bg-secondary);
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  min-width: 220px;  /* Slightly wider for better select display */
+  padding: 8px;
+  animation: menuSlideIn 0.2s ease;
+  /* Ensure solid background */
+  backdrop-filter: none;
+}
+
+.submenu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  color: var(--color-text);
+  cursor: pointer;
+  border-radius: 8px;
+  width: 100%;
+  text-align: left;
+  transition: background-color 0.2s ease;
+  font-size: 14px;
+}
+
+.submenu-item:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.submenu-item.active {
+  background-color: rgba(66, 99, 235, 0.1);
+  color: var(--color-primary);
+}
+
+.submenu-item.setting-item {
+  justify-content: space-between;
+  cursor: default;
+  padding: 8px 12px;  /* Slightly less padding for settings items */
+}
+
+.submenu-item.setting-item:hover {
+  background-color: transparent;
+}
+
+.submenu-item select {
+  padding: 6px 8px;
+  border: 1px solid var(--color-border);
+  border-radius: 6px;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 13px;
+  cursor: pointer;
+  min-width: 80px;  /* Ensure minimum width for select */
+  margin-left: 8px;  /* Add some spacing from label */
+}
+
+.submenu-item select:hover {
+  background-color: var(--color-bg-tertiary);
+}
+
+.menu-divider {
+  height: 1px;
+  background-color: var(--color-border);
+  margin: 8px 12px;
+}
+
+/* Dark theme adjustments */
+[data-theme="dark"] .menu-dropdown,
+[data-theme="dark"] .submenu {
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="dark"] .submenu-item.active {
+  background-color: rgba(88, 166, 255, 0.15);
+}
