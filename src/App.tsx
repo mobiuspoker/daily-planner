@@ -8,12 +8,14 @@ import { setupTrayMenu } from "./services/tray";
 import { setupNotifications } from "./services/notifications";
 import { setupMidnightClear, triggerMidnightClear } from "./services/midnightClear";
 import { setupGlobalHotkey, cleanupGlobalHotkey } from "./services/globalHotkey";
+import { DateTime } from "luxon";
 import "./styles/App.css";
 
 function App() {
   const { theme, initTheme } = useThemeStore();
   const { loadTasks } = useTaskStore();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
+  const [currentDate, setCurrentDate] = useState(DateTime.local().toFormat("EEEE, MMMM d, yyyy"));
 
   useEffect(() => {
     // Initialize app
@@ -31,16 +33,22 @@ function App() {
     
     init().catch(console.error);
     
+    // Update date at midnight
+    const interval = setInterval(() => {
+      setCurrentDate(DateTime.local().toFormat("EEEE, MMMM d, yyyy"));
+    }, 60000); // Check every minute
+    
     // Cleanup on unmount
     return () => {
       cleanupGlobalHotkey();
+      clearInterval(interval);
     };
   }, [initTheme, loadTasks]);
 
   return (
     <div className={`app ${theme}`}>
       <header className="app-header">
-        <h1>Task Planner</h1>
+        <h1>{currentDate}</h1>
         <div style={{ display: "flex", gap: "0.5rem" }}>
           <button 
             className="theme-toggle"
