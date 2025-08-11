@@ -1,0 +1,73 @@
+.task-list {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+  box-shadow: var(--shadow-md);
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.task-list-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--spacing-lg);
+}
+
+.task-list-header h2 {
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.task-count {
+  background-color: var(--color-bg-tertiary);
+  color: var(--color-text-secondary);
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 600;
+}
+
+.task-list-content {
+  flex: 1;
+  min-height: 200px;
+  margin-top: var(--spacing-md);
+}
+
+.completed-section {
+  margin-top: var(--spacing-lg);
+  padding-top: var(--spacing-lg);
+  border-top: 1px solid var(--color-border);
+}
+
+.completed-header {
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  font-weight: 600;
+  padding: var(--spacing-sm) 0;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.completed-header:hover {
+  color: var(--color-text);
+}
+
+.completed-header::before {
+  content: "▶";
+  font-size: 0.75rem;
+  transition: transform 0.2s;
+}
+
+details[open] .completed-header::before {
+  transform: rotate(90deg);
+}
+
+.completed-tasks {
+  margin-top: var(--spacing-md);
+  opacity: 0.7;
+}

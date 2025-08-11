@@ -5,6 +5,19 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
-    "opener:default"
+    "core:tray:default",
+    "core:window:default",
+    "opener:default",
+    "notification:default",
+    "autostart:default",
+    "sql:default",
+    "sql:allow-execute",
+    "sql:allow-select",
+    "sql:allow-load",
+    "sql:allow-close",
+    "global-shortcut:default",
+    "fs:default",
+    "dialog:default",
+    "process:default"
   ]
 }
