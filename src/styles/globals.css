@@ -32,6 +32,14 @@
   --radius-sm: 0.25rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
+  
+  /* Paper theme additions */
+  --bg-paper: #fafaf9;
+  --line-color: #e8e8e8;
+  --text-primary: #2d2d2d;
+  --accent-blue: #4a5d7a;
+  --paper-line-step: 28px;
+  --paper-line-thickness: 1px;
 }
 
 [data-theme="dark"] {
@@ -50,6 +58,12 @@
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 4px 6px rgba(0, 0, 0, 0.3);
   --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.4);
+  
+  /* Paper theme additions for dark mode */
+  --bg-paper: #1b1c1e;
+  --line-color: #2a2c31;
+  --text-primary: #e7e7e7;
+  --accent-blue: #8da3c2;
 }
 
 * {

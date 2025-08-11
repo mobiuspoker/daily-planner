@@ -1,5 +1,5 @@
 .task-list {
-  background-color: var(--color-bg-secondary);
+  background-color: var(--bg-paper);
   border-radius: var(--radius-lg);
   padding: var(--spacing-lg);
   box-shadow: var(--shadow-md);
@@ -12,7 +12,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: calc(var(--paper-line-step) * 0.5);
 }
 
 .task-list-header h2 {
@@ -33,6 +33,25 @@
   flex: 1;
   min-height: 200px;
   margin-top: var(--spacing-md);
+  position: relative;
+  display: grid;
+  grid-auto-rows: var(--paper-line-step);
+  gap: 0;
+}
+
+.task-list-content::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--line-color),
+    var(--line-color) var(--paper-line-thickness),
+    transparent var(--paper-line-thickness),
+    transparent var(--paper-line-step)
+  );
+  z-index: 0;
 }
 
 .completed-section {

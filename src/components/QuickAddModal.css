@@ -22,7 +22,10 @@
 }
 
 .quick-add-modal {
-  background-color: var(--color-bg);
+  background-color: color-mix(in oklab, var(--color-bg) 85%, transparent);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid color-mix(in oklab, var(--color-border) 60%, transparent);
   border-radius: var(--radius-lg);
   box-shadow: var(--shadow-lg);
   width: 90%;

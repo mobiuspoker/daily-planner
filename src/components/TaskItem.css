@@ -1,58 +1,69 @@
 .task-item {
-  display: flex;
+  grid-row: span var(--rows, 1);
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
   align-items: center;
   gap: var(--spacing-md);
-  padding: var(--spacing-md);
-  background-color: var(--color-bg);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  margin-bottom: var(--spacing-sm);
-  transition: box-shadow 0.2s, transform 0.2s;
+  padding: 0 var(--spacing-md);
+  min-height: var(--paper-line-step);
+  background: transparent;
+  border: 0;
+  margin: 0;
+  transition: opacity 0.2s;
   cursor: default;
 }
 
 .task-item:hover {
-  box-shadow: var(--shadow-sm);
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .task-item:hover {
+  background-color: rgba(255, 255, 255, 0.02);
 }
 
 .task-item.completed {
-  opacity: 0.6;
+  opacity: 0.7;
 }
 
 .task-item.completed .task-title {
   text-decoration: line-through;
+  text-decoration-color: color-mix(in oklab, var(--text-primary) 50%, transparent);
   color: var(--color-text-secondary);
 }
 
 .task-item.dragging {
   box-shadow: var(--shadow-lg);
-  transform: scale(1.02);
+  background-color: var(--bg-paper);
+  border-radius: var(--radius-md);
   cursor: grabbing;
+  z-index: 10;
 }
 
 .task-checkbox {
   width: 1.25rem;
   height: 1.25rem;
   border: 2px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background-color: var(--color-bg);
+  border-radius: 999px;
+  background: transparent;
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
   transition: all 0.2s;
-  color: var(--color-success);
+  color: var(--accent-blue);
   font-weight: bold;
 }
 
 .task-checkbox:hover {
-  border-color: var(--color-primary);
-  background-color: var(--color-bg-secondary);
+  border-color: var(--accent-blue);
+  background-color: rgba(74, 93, 122, 0.1);
 }
 
 .task-item.completed .task-checkbox {
-  background-color: var(--color-success);
-  border-color: var(--color-success);
+  background-color: var(--accent-blue);
+  border-color: var(--accent-blue);
   color: white;
 }
 
@@ -65,14 +76,17 @@
 }
 
 .task-title {
+  font-family: var(--font-serif);
   font-size: 1rem;
-  color: var(--color-text);
+  line-height: var(--paper-line-step);
+  color: var(--text-primary);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .task-notes {
+  font-family: var(--font-serif);
   font-size: 0.875rem;
   color: var(--color-text-secondary);
   overflow: hidden;
@@ -81,22 +95,26 @@
 }
 
 .task-time {
+  font-family: var(--font-sans);
   font-size: 0.75rem;
   padding: 2px 6px;
   border-radius: var(--radius-sm);
-  background-color: var(--color-bg-tertiary);
-  color: var(--color-text-secondary);
+  border: 1px solid var(--accent-blue);
+  background-color: transparent;
+  color: var(--accent-blue);
   align-self: flex-start;
 }
 
 .task-time.overdue {
   background-color: rgba(255, 107, 107, 0.1);
+  border-color: var(--color-danger);
   color: var(--color-danger);
   font-weight: 600;
 }
 
 .task-time.soon {
   background-color: rgba(255, 146, 43, 0.1);
+  border-color: var(--color-warning);
   color: var(--color-warning);
   font-weight: 600;
 }
