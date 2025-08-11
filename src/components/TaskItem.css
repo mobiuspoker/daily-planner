@@ -12,6 +12,7 @@
   margin: 0;
   transition: opacity 0.2s;
   cursor: default;
+  border-bottom: var(--paper-line-thickness) solid transparent;
 }
 
 .task-item:hover {

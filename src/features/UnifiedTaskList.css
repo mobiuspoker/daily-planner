@@ -54,12 +54,14 @@
   min-height: calc(var(--paper-line-step) * 3);
   background-image: repeating-linear-gradient(
     to bottom,
-    var(--line-color),
-    var(--line-color) var(--paper-line-thickness),
-    transparent var(--paper-line-thickness),
-    transparent var(--paper-line-step)
+    transparent,
+    transparent calc(var(--paper-line-step) - var(--paper-line-thickness)),
+    var(--line-color) calc(var(--paper-line-step) - var(--paper-line-thickness)),
+    var(--line-color) var(--paper-line-step)
   );
   background-position: 0 0;
+  background-size: 100% var(--paper-line-step);
   padding: 0;
+  padding-bottom: var(--paper-line-thickness);
 }
 
