@@ -26,7 +26,7 @@ interface TaskListProps {
 }
 
 export function TaskList({ type }: TaskListProps) {
-  const { tasks, loadTasks, reorderTasks, toggleTask } = useTaskStore();
+  const { tasks, reorderTasks, toggleTask } = useTaskStore();
   const [activeId, setActiveId] = useState<string | null>(null);
   
   const sensors = useSensors(
@@ -35,10 +35,6 @@ export function TaskList({ type }: TaskListProps) {
       coordinateGetter: sortableKeyboardCoordinates,
     })
   );
-  
-  useEffect(() => {
-    loadTasks();
-  }, [loadTasks]);
   
   const listTasks = useMemo(() => {
     return tasks

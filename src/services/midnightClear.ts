@@ -37,88 +37,81 @@ async function performMidnightClear() {
     const now = DateTime.utc().toISO();
     const today = DateTime.local().toISODate();
     
-    // Get all incomplete TODAY tasks
+    // Get completed tasks from both lists
+    const completedTodayTasks = await db.select<any[]>(
+      "SELECT * FROM tasks WHERE list = 'TODAY' AND completed = 1"
+    );
+    
+    const completedFutureTasks = await db.select<any[]>(
+      "SELECT * FROM tasks WHERE list = 'FUTURE' AND completed = 1"
+    );
+    
+    // Get incomplete tasks count for logging
     const incompleteTasks = await db.select<any[]>(
       "SELECT * FROM tasks WHERE list = 'TODAY' AND completed = 0"
     );
     
-    console.log(`Midnight clear: Found ${incompleteTasks.length} incomplete tasks to move`);
+    const totalCompleted = completedTodayTasks.length + completedFutureTasks.length;
+    console.log(`Midnight clear: Archiving ${completedTodayTasks.length} Today + ${completedFutureTasks.length} Future completed tasks, keeping ${incompleteTasks.length} incomplete tasks in Today`);
     
-    // Begin transaction
-    await db.execute("BEGIN TRANSACTION");
-    
-    try {
-      // Move incomplete tasks to history
-      for (const task of incompleteTasks) {
-        await db.execute(
-          `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [
-            `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            "TODAY",
-            task.title,
-            null,
-            today!,
-            now!
-          ]
-        );
-      }
-      
-      // Move incomplete TODAY tasks to FUTURE
+    // Process completed TODAY tasks
+    for (const task of completedTodayTasks) {
+      // Archive to history with source list
       await db.execute(
-        `UPDATE tasks 
-         SET list = 'FUTURE', 
-             updated_at = ?,
-             sort_index = sort_index + (SELECT COALESCE(MAX(sort_index), 0) + 1 FROM tasks WHERE list = 'FUTURE')
-         WHERE list = 'TODAY' AND completed = 0`,
-        [now]
+        `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          "TODAY", 
+          task.title,
+          task.completed_at,
+          today!,
+          now!
+        ]
       );
       
-      // Move completed TODAY tasks to history
-      const completedTasks = await db.select<any[]>(
-        "SELECT * FROM tasks WHERE list = 'TODAY' AND completed = 1"
-      );
-      
-      for (const task of completedTasks) {
-        await db.execute(
-          `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
-           VALUES (?, ?, ?, ?, ?, ?)`,
-          [
-            `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
-            "TODAY",
-            task.title,
-            task.completed_at,
-            today!,
-            now!
-          ]
-        );
-      }
-      
-      // Delete completed TODAY tasks
+      // Delete the completed task
       await db.execute(
-        "DELETE FROM tasks WHERE list = 'TODAY' AND completed = 1"
+        "DELETE FROM tasks WHERE id = ?",
+        [task.id]
       );
-      
-      // Commit transaction
-      await db.execute("COMMIT");
-      
-      // Reload tasks in the store
-      await useTaskStore.getState().loadTasks();
-      
-      // Send notification
-      if (incompleteTasks.length > 0) {
-        await sendNotification({
-          title: "Daily Clear Complete",
-          body: `${incompleteTasks.length} incomplete task${incompleteTasks.length === 1 ? '' : 's'} moved to Future`,
-        });
-      }
-      
-      console.log("Midnight clear completed successfully");
-    } catch (error) {
-      // Rollback on error
-      await db.execute("ROLLBACK");
-      throw error;
     }
+    
+    // Process completed FUTURE tasks
+    for (const task of completedFutureTasks) {
+      // Archive to history with source list
+      await db.execute(
+        `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
+         VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          `history_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+          "FUTURE", 
+          task.title,
+          task.completed_at,
+          today!,
+          now!
+        ]
+      );
+      
+      // Delete the completed task
+      await db.execute(
+        "DELETE FROM tasks WHERE id = ?",
+        [task.id]
+      );
+    }
+    
+    // Reload tasks in the store
+    await useTaskStore.getState().loadTasks();
+    
+    // Send notification
+    if (totalCompleted > 0 || incompleteTasks.length > 0) {
+      await sendNotification({
+        title: "Daily Clear Complete",
+        body: `Archived ${totalCompleted} completed task${totalCompleted === 1 ? '' : 's'} (${completedTodayTasks.length} Today, ${completedFutureTasks.length} Future). ${incompleteTasks.length} task${incompleteTasks.length === 1 ? '' : 's'} carried over.`,
+      });
+    }
+    
+    console.log("Midnight clear completed successfully");
   } catch (error) {
     console.error("Failed to perform midnight clear:", error);
     await sendNotification({
@@ -137,5 +130,17 @@ export function stopMidnightClear() {
 
 // Allow manual trigger for testing
 export async function triggerMidnightClear() {
-  await performMidnightClear();
+  // Add a small delay to avoid conflicts with ongoing operations
+  setTimeout(async () => {
+    try {
+      await performMidnightClear();
+    } catch (error: any) {
+      if (error?.message?.includes('database is locked')) {
+        console.log("Database busy, retrying in 1 second...");
+        setTimeout(() => performMidnightClear(), 1000);
+      } else {
+        throw error;
+      }
+    }
+  }, 100);
 }

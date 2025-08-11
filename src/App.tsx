@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { TaskList } from "./features/TaskList";
 import { QuickAddModal } from "./components/QuickAddModal";
 import { useThemeStore } from "./state/themeStore";
+import { useTaskStore } from "./state/taskStore";
 import { initializeDatabase } from "./db/database";
 import { setupTrayMenu } from "./services/tray";
 import { setupNotifications } from "./services/notifications";
@@ -11,12 +12,15 @@ import "./styles/App.css";
 
 function App() {
   const { theme, initTheme } = useThemeStore();
+  const { loadTasks } = useTaskStore();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
 
   useEffect(() => {
     // Initialize app
     const init = async () => {
       await initializeDatabase();
+      // Load tasks after database is initialized
+      await loadTasks();
       // Temporarily disable tray menu - will fix later
       // await setupTrayMenu();
       await setupNotifications();
@@ -31,7 +35,7 @@ function App() {
     return () => {
       cleanupGlobalHotkey();
     };
-  }, [initTheme]);
+  }, [initTheme, loadTasks]);
 
   return (
     <div className={`app ${theme}`}>
@@ -49,12 +53,12 @@ function App() {
           <button 
             className="theme-toggle"
             onClick={async () => {
-              if (confirm("Clear all Today tasks? Incomplete tasks will move to Future.")) {
+              if (confirm("Archive completed Today tasks? Incomplete tasks will remain in Today.")) {
                 await triggerMidnightClear();
               }
             }}
             aria-label="Clear today"
-            title="Clear Today's tasks"
+            title="Archive completed tasks"
           >
             🗓️
           </button>
