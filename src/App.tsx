@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { UnifiedTaskList } from "./features/UnifiedTaskList";
 import { QuickAddModal } from "./components/QuickAddModal";
+import { Titlebar } from "./components/Titlebar";
 import { useThemeStore } from "./state/themeStore";
 import { useTaskStore } from "./state/taskStore";
 import { initializeDatabase } from "./db/database";
@@ -48,6 +49,7 @@ function App() {
 
   return (
     <div className={`app ${theme}`}>
+      <Titlebar />
       <header className="app-header">
         <h1>{currentDate}</h1>
         <button 

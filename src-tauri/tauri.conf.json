@@ -19,7 +19,7 @@
         "minWidth": 500,
         "minHeight": 400,
         "center": true,
-        "decorations": true,
+        "decorations": false,
         "alwaysOnTop": false,
         "skipTaskbar": false,
         "closable": true,
