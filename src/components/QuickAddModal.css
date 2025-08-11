@@ -93,9 +93,9 @@
 }
 
 .quick-add-input:focus {
-  border-color: var(--color-primary);
+  border-color: var(--color-text-secondary);
   outline: none;
-  box-shadow: 0 0 0 3px rgba(66, 99, 235, 0.1);
+  box-shadow: none;
 }
 
 .quick-add-options {
