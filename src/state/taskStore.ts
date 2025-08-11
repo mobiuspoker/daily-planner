@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { Task, TaskList, CreateTaskInput, UpdateTaskInput } from "../types/task";
 import * as taskService from "../services/taskService";
+import { clearNotificationCache } from "../services/notifications";
 
 interface TaskStore {
   tasks: Task[];
@@ -51,6 +52,10 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         ),
         error: null
       }));
+      // Clear notification cache if task is completed or time changed
+      if (input.completed || input.scheduledAt !== undefined) {
+        clearNotificationCache(id);
+      }
     } catch (error) {
       set({ error: (error as Error).message });
     }
@@ -63,6 +68,8 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         tasks: state.tasks.filter(task => task.id !== id),
         error: null
       }));
+      // Clear notification cache for deleted task
+      clearNotificationCache(id);
     } catch (error) {
       set({ error: (error as Error).message });
     }

@@ -3,6 +3,7 @@ import { TaskList } from "./features/TaskList";
 import { useThemeStore } from "./state/themeStore";
 import { initializeDatabase } from "./db/database";
 import { setupTrayMenu } from "./services/tray";
+import { setupNotifications } from "./services/notifications";
 import "./styles/App.css";
 
 function App() {
@@ -14,6 +15,7 @@ function App() {
       await initializeDatabase();
       // Temporarily disable tray menu - will fix later
       // await setupTrayMenu();
+      await setupNotifications();
       initTheme();
     };
     
