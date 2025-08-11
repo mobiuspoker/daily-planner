@@ -11,6 +11,7 @@
   background-color: var(--color-bg);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
+  font-family: var(--font-serif);
   font-size: 0.9375rem;
   transition: all 0.2s;
 }
