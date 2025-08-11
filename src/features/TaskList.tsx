@@ -42,14 +42,6 @@ export function TaskList({ type }: TaskListProps) {
       .sort((a, b) => a.sortIndex - b.sortIndex);
   }, [tasks, type]);
   
-  const activeTasks = useMemo(() => {
-    return listTasks.filter(task => !task.completed);
-  }, [listTasks]);
-  
-  const completedTasks = useMemo(() => {
-    return listTasks.filter(task => task.completed);
-  }, [listTasks]);
-  
   const handleDragStart = (event: DragStartEvent) => {
     setActiveId(event.active.id as string);
   };
@@ -58,8 +50,8 @@ export function TaskList({ type }: TaskListProps) {
     const { active, over } = event;
     
     if (over && active.id !== over.id) {
-      const oldIndex = activeTasks.findIndex(task => task.id === active.id);
-      const newIndex = activeTasks.findIndex(task => task.id === over.id);
+      const oldIndex = listTasks.findIndex(task => task.id === active.id);
+      const newIndex = listTasks.findIndex(task => task.id === over.id);
       
       if (oldIndex !== -1 && newIndex !== -1) {
         await reorderTasks(active.id as string, newIndex);
@@ -75,7 +67,7 @@ export function TaskList({ type }: TaskListProps) {
     <div className="task-list">
       <div className="task-list-header">
         <h2>{type === "TODAY" ? "Today" : "Future"}</h2>
-        <span className="task-count">{activeTasks.length}</span>
+        <span className="task-count">{listTasks.length}</span>
       </div>
       
       <AddTaskInput list={type} />
@@ -88,10 +80,10 @@ export function TaskList({ type }: TaskListProps) {
       >
         <div className="task-list-content">
           <SortableContext
-            items={activeTasks.map(t => t.id)}
+            items={listTasks.map(t => t.id)}
             strategy={verticalListSortingStrategy}
           >
-            {activeTasks.map(task => (
+            {listTasks.map(task => (
               <TaskItem
                 key={task.id}
                 task={task}
@@ -107,23 +99,6 @@ export function TaskList({ type }: TaskListProps) {
           ) : null}
         </DragOverlay>
       </DndContext>
-      
-      {completedTasks.length > 0 && (
-        <details className="completed-section">
-          <summary className="completed-header">
-            Completed ({completedTasks.length})
-          </summary>
-          <div className="completed-tasks">
-            {completedTasks.map(task => (
-              <TaskItem
-                key={task.id}
-                task={task}
-                onToggle={() => toggleTask(task.id)}
-              />
-            ))}
-          </div>
-        </details>
-      )}
     </div>
   );
 }
