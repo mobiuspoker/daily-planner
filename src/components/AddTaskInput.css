@@ -30,15 +30,16 @@
 .add-button {
   padding: var(--spacing-sm) var(--spacing-lg);
   background-color: transparent;
-  color: var(--color-text-secondary);
-  border: 1px solid var(--color-border);
+  color: var(--ink-sage);
+  border: 1px solid var(--ink-sage);
   border-radius: var(--radius-md);
   font-weight: 500;
   transition: opacity 0.2s, transform 0.2s;
+  opacity: 0.8;
 }
 
 .add-button:hover {
-  opacity: 0.8;
+  opacity: 1;
 }
 
 .add-button:active {

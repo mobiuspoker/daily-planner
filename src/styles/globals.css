@@ -38,6 +38,9 @@
   --line-color: #e5e5e3;
   --text-primary: #2d2d2d;
   --accent-blue: #4a5d7a;
+  --ink-sage: #7a8471;
+  --ink-terracotta: #b08882;
+  --ink-amber: #c4a572;
   --paper-line-step: 36px;
   --paper-line-thickness: 1px;
 }
@@ -64,6 +67,9 @@
   --line-color: #2a2a2a;
   --text-primary: #f1f1f1;
   --accent-blue: #8da3c2;
+  --ink-sage: #6b7265;
+  --ink-terracotta: #8a6b66;
+  --ink-amber: #9a8362;
 }
 
 * {

@@ -66,16 +66,16 @@
 }
 
 .task-item.completed .task-checkbox {
-  background-color: var(--color-text-secondary);
-  border-color: var(--color-text-secondary);
+  background-color: var(--ink-sage);
+  border-color: var(--ink-sage);
   color: var(--bg-paper);
 }
 
 .task-content {
   flex: 1;
   display: flex;
-  flex-direction: column;
-  gap: var(--spacing-xs);
+  align-items: center;
+  gap: var(--spacing-sm);
   min-width: 0;
 }
 
@@ -101,26 +101,34 @@
 .task-time {
   font-family: var(--font-sans);
   font-size: 0.75rem;
-  padding: 2px 6px;
+  padding: 1px 6px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--color-border);
   background-color: transparent;
   color: var(--color-text-secondary);
-  align-self: flex-start;
+  flex-shrink: 0;
+  margin-left: auto;
 }
 
 .task-time.overdue {
-  background-color: rgba(255, 107, 107, 0.1);
-  border-color: var(--color-danger);
-  color: var(--color-danger);
+  background-color: transparent;
+  border-color: var(--ink-terracotta);
+  color: var(--ink-terracotta);
   font-weight: 600;
 }
 
 .task-time.soon {
-  background-color: rgba(255, 146, 43, 0.1);
-  border-color: var(--color-warning);
-  color: var(--color-warning);
+  background-color: transparent;
+  border-color: var(--ink-amber);
+  color: var(--ink-amber);
   font-weight: 600;
+}
+
+.task-item.completed .task-time {
+  border-color: var(--ink-sage);
+  color: var(--ink-sage);
+  opacity: 0.7;
+  font-weight: normal;
 }
 
 .drag-handle {
