@@ -32,7 +32,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onRunMidnightClear }: 
   const [activeSubmenu, setActiveSubmenu] = useState<string | null>(null);
   const [submenuPosition, setSubmenuPosition] = useState({ top: 0, left: 0 });
   const menuRef = useRef<HTMLDivElement>(null);
-  const { theme, themeMode, setThemeMode } = useThemeStore();
+  const { themeMode, setThemeMode } = useThemeStore();
   const { updateSetting, getSetting } = useSettingsStore();
   const [reminderLead, setReminderLead] = useState(15);
   const [overdueWindow, setOverdueWindow] = useState(60);

@@ -13,7 +13,7 @@ import { useTaskStore } from "./state/taskStore";
 import { useSettingsStore } from "./state/settingsStore";
 import { initializeDatabase } from "./db/database";
 import { setupNotifications } from "./services/notifications";
-import { setupMidnightClear, runMidnightClear } from "./services/midnightClear";
+import { setupMidnightClear } from "./services/midnightClear";
 import { setupGlobalHotkey, cleanupGlobalHotkey } from "./services/globalHotkey";
 import { setupSummaryScheduler, stopSummaryScheduler } from "./services/summaryScheduler";
 import { DateTime } from "luxon";

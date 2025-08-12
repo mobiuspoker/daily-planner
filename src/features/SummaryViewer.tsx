@@ -3,11 +3,9 @@ import { readTextFile } from '@tauri-apps/plugin-fs';
 import { 
   listSummaryFiles, 
   deleteSummaryFile,
-  getDestinationFolder,
   SummaryFile 
 } from '../services/summaryService';
 import { generateWeeklyNow, generateMonthlyNow } from '../services/summaryScheduler';
-import { setSetting } from '../services/settingsService';
 import { Trash2, CalendarDays, Calendar, Copy, ChevronLeft, ChevronRight, Search } from 'lucide-react';
 import { CustomDropdown } from '../components/CustomDropdown';
 import './SummaryViewer.css';

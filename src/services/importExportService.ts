@@ -1,7 +1,7 @@
 import { getDatabase } from "../db/database";
 import { save, open } from "@tauri-apps/plugin-dialog";
 import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
-import { getAllSettings, setSetting, deleteAllSettings } from "./settingsService";
+import { getAllSettings, setSetting } from "./settingsService";
 import { useTaskStore } from "../state/taskStore";
 import { DateTime } from "luxon";
 
@@ -113,7 +113,7 @@ export async function importData(): Promise<void> {
           [item.id]
         );
         
-        if (existing.length === 0) {
+        if ((existing as any[]).length === 0) {
           await db.execute(
             `INSERT INTO task_history (id, source_list, title, completed_at, cleared_on, created_at)
              VALUES (?, ?, ?, ?, ?, ?)`,
@@ -139,7 +139,7 @@ export async function importData(): Promise<void> {
           [task.id]
         );
         
-        if (existing.length === 0) {
+        if ((existing as any[]).length === 0) {
           await db.execute(
             `INSERT INTO tasks (id, title, notes, list, sort_index, has_time, scheduled_at, completed, completed_at, created_at, updated_at)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,

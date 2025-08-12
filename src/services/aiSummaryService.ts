@@ -144,7 +144,7 @@ Create a structured summary using EXACTLY this format:
 **Areas of Focus:**
 - [Identify the primary area(s) where most effort was spent]
 
-${style === 'monthly' ? `**Recommendations:**
+${style === 'detailed' ? `**Recommendations:**
 - [1-2 suggestions for the upcoming period based on patterns observed]` : ''}
 
 Keep each point concise and actionable. Focus on insights rather than just counting tasks.`;

@@ -19,14 +19,11 @@ export function HistoryViewer() {
     loading,
     error,
     currentMonth,
-    totalCount,
     loadMonthDays,
     selectDay,
-    searchInDay,
     searchAll,
     clearSearch,
-    navigateMonth,
-    loadTotalCount
+    navigateMonth
   } = useHistoryStore();
   
   const [localSearch, setLocalSearch] = useState(searchQuery);
@@ -34,7 +31,6 @@ export function HistoryViewer() {
   useEffect(() => {
     // Load initial data
     loadMonthDays(currentMonth.year, currentMonth.month);
-    loadTotalCount();
   }, []);
 
   useEffect(() => {

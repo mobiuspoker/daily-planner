@@ -89,7 +89,8 @@ export async function setupGlobalHotkey(onQuickAdd: () => void) {
     console.log(`Global hotkey ${hotkey} registered successfully`);
   } catch (error) {
     // Only log as error if it's not an "already registered" error
-    if (!error.toString().includes('already registered')) {
+    const errorMessage = error instanceof Error ? error.toString() : String(error);
+    if (!errorMessage.includes('already registered')) {
       console.error("Failed to register global hotkey:", error);
     }
     isSetup = false;
@@ -134,7 +135,8 @@ export async function updateGlobalHotkey(newHotkey: string) {
     console.log(`Updated global hotkey to: ${newHotkey}`);
   } catch (error) {
     // Only log as error if it's not an "already registered" error
-    if (!error.toString().includes('already registered')) {
+    const errorMessage = error instanceof Error ? error.toString() : String(error);
+    if (!errorMessage.includes('already registered')) {
       console.error("Failed to update global hotkey:", error);
     }
     

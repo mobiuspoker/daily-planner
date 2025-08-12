@@ -7,10 +7,8 @@ import {
   Settings, 
   HelpCircle,
   FolderOpen,
-  Calendar,
   FileText
 } from "lucide-react";
-import { open } from "@tauri-apps/plugin-dialog";
 import { Command } from "@tauri-apps/plugin-shell";
 import { mkdir } from "@tauri-apps/plugin-fs";
 import { appDataDir } from "@tauri-apps/api/path";

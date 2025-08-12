@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { getAllSettings, setSetting, getSetting } from "../services/settingsService";
+import { getAllSettings, setSetting } from "../services/settingsService";
 
 interface SettingsStore {
   settings: Record<string, any>;

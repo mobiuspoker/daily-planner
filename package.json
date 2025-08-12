@@ -9,7 +9,10 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "tauri:dev": "tauri dev",
-    "tauri:build": "tauri build"
+    "tauri:build": "tauri build",
+    "version:patch": "npm version patch && cd src-tauri && cargo bump patch",
+    "version:minor": "npm version minor && cd src-tauri && cargo bump minor",
+    "version:major": "npm version major && cd src-tauri && cargo bump major"
   },
   "dependencies": {
     "@dnd-kit/core": "^6.3.1",
@@ -22,6 +25,7 @@
     "@tauri-apps/plugin-global-shortcut": "^2.3.0",
     "@tauri-apps/plugin-http": "^2.5.1",
     "@tauri-apps/plugin-notification": "^2.3.0",
+    "@tauri-apps/plugin-process": "^2.3.0",
     "@tauri-apps/plugin-shell": "^2.3.0",
     "@tauri-apps/plugin-sql": "^2.3.0",
     "lucide-react": "^0.539.0",
