@@ -52,7 +52,8 @@
       "minimumSystemVersion": "10.15",
       "hardenedRuntime": false,
       "entitlements": null,
-      "signingIdentity": null
+      "signingIdentity": "-",
+      "providerShortName": null
     }
   }
 }

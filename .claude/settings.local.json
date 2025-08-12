@@ -6,7 +6,9 @@
       "Bash(npm run tauri:*)",
       "Bash(grep:*)",
       "Bash(cargo tauri:*)",
-      "WebFetch(domain:v2.tauri.app)"
+      "WebFetch(domain:v2.tauri.app)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)"
     ],
     "deny": []
   }
