@@ -13,6 +13,30 @@ interface ExportData {
   settings: Record<string, any>;
 }
 
+function normalizeBooleanToInt(value: any): number {
+  if (typeof value === "number") {
+    return value === 1 ? 1 : 0;
+  }
+  if (typeof value === "boolean") {
+    return value ? 1 : 0;
+  }
+  if (typeof value === "string") {
+    const v = value.trim().toLowerCase();
+    if (v === "1" || v === "true" || v === "yes" || v === "y" || v === "on") {
+      return 1;
+    }
+  }
+  return 0;
+}
+
+function normalizeList(value: any): "TODAY" | "FUTURE" {
+  if (typeof value === "string") {
+    const up = value.trim().toUpperCase();
+    if (up === "TODAY" || up === "FUTURE") return up as any;
+  }
+  return "TODAY";
+}
+
 export async function exportData(): Promise<void> {
   try {
     const db = getDatabase();
@@ -140,6 +164,10 @@ export async function importData(): Promise<void> {
         );
         
         if ((existing as any[]).length === 0) {
+          const list = normalizeList(task.list);
+          const hasTime = normalizeBooleanToInt(task.hasTime);
+          const completed = normalizeBooleanToInt(task.completed);
+          const sortIndex = typeof task.sortIndex === "number" ? task.sortIndex : Number(task.sortIndex) || 0;
           await db.execute(
             `INSERT INTO tasks (id, title, notes, list, sort_index, has_time, scheduled_at, completed, completed_at, created_at, updated_at)
              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -147,11 +175,11 @@ export async function importData(): Promise<void> {
               task.id,
               task.title,
               task.notes,
-              task.list,
-              task.sortIndex,
-              task.hasTime,
+              list,
+              sortIndex,
+              hasTime,
               task.scheduledAt,
-              task.completed,
+              completed,
               task.completedAt,
               task.createdAt,
               task.updatedAt

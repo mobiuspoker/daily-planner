@@ -38,17 +38,18 @@ async function performMidnightClear() {
     const today = DateTime.local().toISODate();
     
     // Get completed tasks from both lists
+    // Be resilient to imported data where boolean fields might be stored as strings
     const completedTodayTasks = await db.select<any[]>(
-      "SELECT * FROM tasks WHERE list = 'TODAY' AND completed = 1"
+      "SELECT * FROM tasks WHERE upper(list) = 'TODAY' AND (completed = 1 OR completed = '1' OR lower(completed) = 'true')"
     );
     
     const completedFutureTasks = await db.select<any[]>(
-      "SELECT * FROM tasks WHERE list = 'FUTURE' AND completed = 1"
+      "SELECT * FROM tasks WHERE upper(list) = 'FUTURE' AND (completed = 1 OR completed = '1' OR lower(completed) = 'true')"
     );
     
     // Get incomplete tasks count for logging
     const incompleteTasks = await db.select<any[]>(
-      "SELECT * FROM tasks WHERE list = 'TODAY' AND completed = 0"
+      "SELECT * FROM tasks WHERE upper(list) = 'TODAY' AND (completed = 0 OR completed = '0' OR lower(completed) = 'false' OR completed IS NULL)"
     );
     
     const totalCompleted = completedTodayTasks.length + completedFutureTasks.length;
