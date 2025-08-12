@@ -1,10 +1,11 @@
 import { register, unregister, isRegistered } from "@tauri-apps/plugin-global-shortcut";
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import { getSetting } from './settingsService';
 
 // Store callbacks globally to persist across re-renders
 const globalCallbacks = new Map<string, () => void>();
 let isSetup = false;
-const HOTKEY = "Ctrl+Shift+A";
+let currentHotkey: string | null = null;
 
 // Single global handler that won't be recreated
 async function handleHotkey() {
@@ -47,38 +48,82 @@ export async function setupGlobalHotkey(onQuickAdd: () => void) {
   globalCallbacks.set('quickAdd', onQuickAdd);
   
   try {
-    // Always try to unregister first to clean up any stale handlers
-    try {
-      const alreadyRegistered = await isRegistered(HOTKEY);
-      if (alreadyRegistered) {
-        await unregister(HOTKEY);
-        console.log("Unregistered existing hotkey");
+    // Get the configured hotkey or use default
+    const hotkey = (await getSetting('globalHotkey') || 'Ctrl+Shift+A') as string;
+    
+    // Always try to unregister the current hotkey first
+    if (currentHotkey) {
+      try {
+        const alreadyRegistered = await isRegistered(currentHotkey);
+        if (alreadyRegistered) {
+          await unregister(currentHotkey);
+          console.log(`Unregistered existing hotkey: ${currentHotkey}`);
+        }
+      } catch (e) {
+        // Ignore unregister errors
       }
-    } catch (e) {
-      // Ignore unregister errors
     }
     
-    // Register the global hotkey with the stable handler
-    await register(HOTKEY, handleHotkey);
+    // Register the new hotkey
+    await register(hotkey, handleHotkey);
+    currentHotkey = hotkey;
     
     isSetup = true;
-    console.log(`Global hotkey ${HOTKEY} registered successfully`);
+    console.log(`Global hotkey ${hotkey} registered successfully`);
   } catch (error) {
     console.error("Failed to register global hotkey:", error);
     isSetup = false;
   }
 }
 
+export async function updateGlobalHotkey(newHotkey: string) {
+  try {
+    // Unregister the current hotkey
+    if (currentHotkey) {
+      try {
+        const isReg = await isRegistered(currentHotkey);
+        if (isReg) {
+          await unregister(currentHotkey);
+          console.log(`Unregistered hotkey: ${currentHotkey}`);
+        }
+      } catch (e) {
+        // Ignore unregister errors
+      }
+    }
+    
+    // Register the new hotkey
+    await register(newHotkey, handleHotkey);
+    currentHotkey = newHotkey;
+    
+    console.log(`Updated global hotkey to: ${newHotkey}`);
+  } catch (error) {
+    console.error("Failed to update global hotkey:", error);
+    
+    // Try to re-register the old hotkey if update failed
+    if (currentHotkey && currentHotkey !== newHotkey) {
+      try {
+        await register(currentHotkey, handleHotkey);
+        console.log(`Reverted to previous hotkey: ${currentHotkey}`);
+      } catch (e) {
+        console.error("Failed to revert hotkey:", e);
+      }
+    }
+    
+    throw error;
+  }
+}
+
 export async function cleanupGlobalHotkey() {
-  if (!isSetup) return;
+  if (!isSetup || !currentHotkey) return;
   
   try {
-    const isReg = await isRegistered(HOTKEY);
+    const isReg = await isRegistered(currentHotkey);
     if (isReg) {
-      await unregister(HOTKEY);
-      console.log("Global hotkey unregistered");
+      await unregister(currentHotkey);
+      console.log(`Global hotkey ${currentHotkey} unregistered`);
     }
     isSetup = false;
+    currentHotkey = null;
   } catch (error) {
     // Ignore errors during cleanup
     console.log("Cleanup: hotkey might already be unregistered");

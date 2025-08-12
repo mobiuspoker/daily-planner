@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { X, Clock, Bell, Moon, Sun, Monitor, Calendar, FolderOpen, Key } from "lucide-react";
+import { X, Clock, Bell, Moon, Sun, Monitor, Calendar, FolderOpen, Key, Keyboard } from "lucide-react";
 import { useThemeStore } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { CustomDropdown } from "./CustomDropdown";
 import { open } from "@tauri-apps/plugin-dialog";
+import { updateGlobalHotkey } from "../services/globalHotkey";
 import "./SettingsModal.css";
 
 interface SettingsModalProps {
@@ -25,6 +26,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [aiProvider, setAiProvider] = useState("none");
   const [aiApiKey, setAiApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
+  const [globalHotkey, setGlobalHotkey] = useState("Ctrl+Shift+A");
 
   useEffect(() => {
     if (isOpen) {
@@ -38,6 +40,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       const folder = getSetting<string>("summaryDestinationFolder") || "";
       const provider = getSetting<string>("aiProvider") || "none";
       const key = getSetting<string>("aiApiKey") || "";
+      const hotkey = getSetting<string>("globalHotkey") || "Ctrl+Shift+A";
       
       setReminderLead(lead);
       setOverdueWindow(overdue);
@@ -49,6 +52,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       setSummaryFolder(folder);
       setAiProvider(provider);
       setAiApiKey(key);
+      setGlobalHotkey(hotkey);
     }
   }, [isOpen, getSetting]);
 
@@ -114,6 +118,33 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     await updateSetting("aiApiKey", key);
   };
 
+  const handleGlobalHotkeyChange = async (hotkey: string) => {
+    // Basic validation - ensure it's not empty and has valid format
+    const trimmed = hotkey.trim();
+    if (!trimmed) {
+      // Reset to default if empty
+      const defaultHotkey = "Ctrl+Shift+A";
+      setGlobalHotkey(defaultHotkey);
+      await updateSetting("globalHotkey", defaultHotkey);
+      await updateGlobalHotkey(defaultHotkey);
+      return;
+    }
+    
+    try {
+      // Try to update the hotkey
+      await updateGlobalHotkey(trimmed);
+      // If successful, save it
+      await updateSetting("globalHotkey", trimmed);
+      setGlobalHotkey(trimmed);
+    } catch (error) {
+      console.error("Invalid hotkey combination:", error);
+      // Revert to the previous valid hotkey
+      const previousHotkey = getSetting<string>("globalHotkey") || "Ctrl+Shift+A";
+      setGlobalHotkey(previousHotkey);
+      // Could show an error message here if we had a toast/notification system
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -155,6 +186,30 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                   <span>Dark</span>
                 </button>
               </div>
+            </div>
+          </div>
+
+          {/* Quick Add Section */}
+          <div className="settings-section">
+            <h3>Quick Add</h3>
+            <div className="setting-item">
+              <label htmlFor="global-hotkey">
+                <Keyboard size={16} />
+                Global Hotkey
+              </label>
+              <input
+                id="global-hotkey"
+                type="text"
+                value={globalHotkey}
+                onChange={(e) => setGlobalHotkey(e.target.value)}
+                onBlur={(e) => handleGlobalHotkeyChange(e.target.value)}
+                placeholder="e.g., Ctrl+Shift+A"
+                className="hotkey-input"
+              />
+            </div>
+            <div className="setting-description">
+              <p>Press this key combination from anywhere to quickly add a task.</p>
+              <p>Format: Ctrl+Shift+Letter, Alt+Letter, F1-F12, etc.</p>
             </div>
           </div>
 

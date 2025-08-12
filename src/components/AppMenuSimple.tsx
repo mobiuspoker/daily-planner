@@ -22,10 +22,9 @@ interface AppMenuProps {
   onOpenHistory: () => void;
   onOpenSummaries: () => void;
   onOpenSettings: () => void;
-  onRunMidnightClear: () => void;
 }
 
-export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onRunMidnightClear }: AppMenuProps) {
+export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings }: AppMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { getSetting } = useSettingsStore();
@@ -180,16 +179,6 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onRunM
             >
               <Settings size={16} />
               <span>Settings</span>
-            </button>
-            <button 
-              className="menu-item"
-              onClick={() => {
-                onRunMidnightClear();
-                setIsOpen(false);
-              }}
-            >
-              <Calendar size={16} />
-              <span>Run Midnight Clear</span>
             </button>
           </div>
 

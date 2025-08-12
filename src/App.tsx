@@ -59,14 +59,6 @@ function App() {
     };
   }, [initTheme, loadTasks, loadSettings]);
 
-  const handleRunMidnightClear = async () => {
-    try {
-      await runMidnightClear();
-      await loadTasks();
-    } catch (error) {
-      console.error("Failed to run midnight clear:", error);
-    }
-  };
 
   return (
     <div className={`app ${theme}`}>
@@ -105,7 +97,6 @@ function App() {
             setShowHistory(false);
           }}
           onOpenSettings={() => setIsSettingsOpen(true)}
-          onRunMidnightClear={handleRunMidnightClear}
         />
       </header>
       
