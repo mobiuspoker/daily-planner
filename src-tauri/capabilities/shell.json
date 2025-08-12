@@ -1,0 +1,18 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "shell-scope",
+  "description": "Shell scope for opening folders",
+  "windows": ["main"],
+  "permissions": [
+    {
+      "identifier": "shell:allow-execute",
+      "allow": [
+        {
+          "name": "explorer",
+          "cmd": "explorer",
+          "args": true
+        }
+      ]
+    }
+  ]
+}

@@ -11,6 +11,8 @@ import {
   FileText
 } from "lucide-react";
 import { open } from "@tauri-apps/plugin-dialog";
+import { Command } from "@tauri-apps/plugin-shell";
+import { mkdir } from "@tauri-apps/plugin-fs";
 import { appDataDir } from "@tauri-apps/api/path";
 import { exportData, importData } from "../services/importExportService";
 import { useSettingsStore } from "../state/settingsStore";
@@ -71,10 +73,9 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onRunM
   const openDataFolder = async () => {
     try {
       const dataDir = await appDataDir();
-      await open({
-        directory: true,
-        defaultPath: dataDir
-      });
+      // Open folder in Windows Explorer using process plugin
+      const command = Command.create("explorer", [dataDir]);
+      await command.execute();
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to open data folder:", error);
@@ -83,11 +84,24 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onRunM
 
   const openSummariesFolder = async () => {
     try {
-      const summariesPath = getSetting<string>("summaryDestinationFolder") || await appDataDir();
-      await open({
-        directory: true,
-        defaultPath: summariesPath
-      });
+      let summariesPath = getSetting<string>("summaryDestinationFolder");
+      
+      // If no custom path is set, use a summaries subdirectory in app data
+      if (!summariesPath || summariesPath === "") {
+        const dataDir = await appDataDir();
+        summariesPath = `${dataDir}summaries`;
+      }
+      
+      // Create the folder if it doesn't exist
+      try {
+        await mkdir(summariesPath, { recursive: true });
+      } catch (e) {
+        // Folder might already exist, that's fine
+      }
+      
+      // Open folder in Windows Explorer using process plugin
+      const command = Command.create("explorer", [summariesPath]);
+      await command.execute();
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to open summaries folder:", error);

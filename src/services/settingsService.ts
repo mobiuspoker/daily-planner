@@ -24,7 +24,7 @@ const DEFAULT_SETTINGS: Partial<Record<SettingKey, any>> = {
   summaryWeeklyEnabled: false,
   summaryMonthlyEnabled: false,
   summaryTime: "08:00",
-  summaryDestinationFolder: ""
+  summaryDestinationFolder: "" // Empty means use default app data/summaries folder
 };
 
 export async function getSetting<T = any>(key: SettingKey): Promise<T | undefined> {

@@ -228,6 +228,19 @@
   min-height: 200px;
 }
 
+.history-items-wrapper {
+  animation: gentleFadeIn 0.15s ease-in;
+}
+
+@keyframes gentleFadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
 .history-loading,
 .history-error,
 .history-empty {

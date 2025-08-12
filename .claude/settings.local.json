@@ -4,7 +4,9 @@
       "Bash(mkdir:*)",
       "Bash(cp:*)",
       "Bash(npm run tauri:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(cargo tauri:*)",
+      "WebFetch(domain:v2.tauri.app)"
     ],
     "deny": []
   }

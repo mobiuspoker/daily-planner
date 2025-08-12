@@ -184,44 +184,44 @@ export function HistoryViewer() {
         
         {/* Results Section */}
         <div className="history-results">
-          {loading && (
-            <div className="history-loading">Loading...</div>
-          )}
-
           {error && (
             <div className="history-error">{error}</div>
           )}
 
-          {!loading && !error && selectedDay && (
+          {!error && selectedDay && (
             <div className="history-day-content">
               <h3 className="day-header">{formatDate(selectedDay)}</h3>
               
-              {items.length === 0 ? (
-                <div className="history-empty">
-                  {searchQuery ? "No tasks found matching your search." : "No tasks archived on this day."}
-                </div>
-              ) : (
-                <div className="history-items">
-                  {items.map(item => (
-                    <div key={item.id} className="history-item">
-                      <div className="history-checkbox completed">
-                        ✓
-                      </div>
-                      <span className="history-item-title">{item.title}</span>
-                      {item.completedAt && (
-                        <span className="history-item-time">
-                          <Clock size={12} />
-                          {formatTime(item.completedAt)}
-                        </span>
-                      )}
+              {!loading && (
+                <div className="history-items-wrapper" key={selectedDay}>
+                  {items.length === 0 ? (
+                    <div className="history-empty">
+                      {searchQuery ? "No tasks found matching your search." : "No tasks archived on this day."}
                     </div>
-                  ))}
+                  ) : (
+                    <div className="history-items">
+                      {items.map(item => (
+                        <div key={item.id} className="history-item">
+                          <div className="history-checkbox completed">
+                            ✓
+                          </div>
+                          <span className="history-item-title">{item.title}</span>
+                          {item.completedAt && (
+                            <span className="history-item-time">
+                              <Clock size={12} />
+                              {formatTime(item.completedAt)}
+                            </span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )}
             </div>
           )}
 
-          {!loading && !error && searchQuery && (
+          {!error && searchQuery && !loading && (
             <div className="history-search-results">
               <h3 className="results-header">Search Results ({items.length})</h3>
               {items.length === 0 ? (

@@ -32,6 +32,13 @@ async function checkUpcomingTasks() {
   const reminderLeadMinutes = await getSetting<number>("reminderLeadMinutes") || 15;
   const overdueWindowMinutes = await getSetting<number>("overdueWindowMinutes") || 60;
   
+  // If either setting is -1 (Never), skip that type of notification
+  const remindersEnabled = reminderLeadMinutes !== -1;
+  const overdueAlertsEnabled = overdueWindowMinutes !== -1;
+  
+  // Skip all notifications if both are disabled
+  if (!remindersEnabled && !overdueAlertsEnabled) return;
+  
   for (const task of tasks) {
     // Skip if already completed or no scheduled time
     if (task.completed || !task.scheduledAt) continue;
@@ -43,7 +50,7 @@ async function checkUpcomingTasks() {
     const diffMinutes = taskTime.diff(now, "minutes").minutes;
     
     // Notify at configured minutes before (upcoming window)
-    if (diffMinutes > 0 && diffMinutes <= reminderLeadMinutes) {
+    if (remindersEnabled && diffMinutes > 0 && diffMinutes <= reminderLeadMinutes) {
       await sendNotification({
         title: "Task Reminder",
         body: `"${task.title}" is due in ${Math.round(diffMinutes)} minutes`,
@@ -54,7 +61,7 @@ async function checkUpcomingTasks() {
     }
     
     // Notify when overdue (within configured window)
-    if (diffMinutes < 0 && diffMinutes > -overdueWindowMinutes) {
+    if (overdueAlertsEnabled && diffMinutes < 0 && diffMinutes > -overdueWindowMinutes) {
       await sendNotification({
         title: "Task Overdue",
         body: `"${task.title}" was due ${Math.abs(Math.round(diffMinutes))} minutes ago`,

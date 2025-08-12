@@ -95,6 +95,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 id="reminder-lead"
                 value={reminderLead}
                 options={[
+                  { value: -1, label: "Never" },
                   { value: 5, label: "5 minutes" },
                   { value: 10, label: "10 minutes" },
                   { value: 15, label: "15 minutes" },
@@ -114,6 +115,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 id="overdue-window"
                 value={overdueWindow}
                 options={[
+                  { value: -1, label: "Never" },
                   { value: 30, label: "30 minutes" },
                   { value: 60, label: "1 hour" },
                   { value: 120, label: "2 hours" },
@@ -125,8 +127,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
             
             <div className="setting-description">
-              <p>• Reminders are sent before a task is due</p>
-              <p>• Overdue alerts are sent after a task's scheduled time</p>
+              <p>Set how early you want reminders, or turn them off.</p>
             </div>
           </div>
         </div>

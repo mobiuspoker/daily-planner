@@ -22,21 +22,23 @@
 }
 
 .settings-modal {
-  position: relative;
-  background: var(--color-bg-secondary);
-  border-radius: 16px;
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  background-color: var(--bg-paper);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
   width: 90%;
   max-width: 500px;
   max-height: 80vh;
   overflow-y: auto;
-  animation: modalSlideIn 0.3s ease;
+  animation: slideUp 0.2s ease;
 }
 
-@keyframes modalSlideIn {
+@keyframes slideUp {
   from {
     opacity: 0;
-    transform: translateY(-20px);
+    transform: translateY(20px);
   }
   to {
     opacity: 1;
@@ -48,41 +50,47 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 24px;
-  border-bottom: 1px solid var(--color-border);
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--line-color);
 }
 
 .modal-header h2 {
   margin: 0;
-  font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text);
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
 }
 
 .modal-close {
-  background: transparent;
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  background-color: transparent;
   border: none;
   color: var(--color-text-secondary);
+  font-size: 1.5rem;
+  line-height: 1;
   cursor: pointer;
-  padding: 8px;
-  border-radius: 8px;
-  transition: all 0.2s ease;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: background-color 0.2s;
 }
 
 .modal-close:hover {
-  background: var(--color-bg-tertiary);
-  color: var(--color-text);
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+[data-theme="dark"] .modal-close:hover {
+  background-color: rgba(255, 255, 255, 0.05);
 }
 
 .settings-content {
-  padding: 24px;
+  padding: var(--spacing-lg);
 }
 
 .settings-section {
-  margin-bottom: 32px;
+  margin-bottom: var(--spacing-xl);
 }
 
 .settings-section:last-child {
@@ -90,34 +98,36 @@
 }
 
 .settings-section h3 {
-  margin: 0 0 16px 0;
-  font-size: 14px;
+  margin: 0 0 var(--spacing-md) 0;
+  font-size: 0.75rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
   color: var(--color-text-secondary);
+  font-family: var(--font-sans);
+  opacity: 0.6;
 }
 
 .setting-item {
-  margin-bottom: 20px;
+  margin-bottom: var(--spacing-md);
 }
 
 .setting-item label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  margin-bottom: 8px;
-  font-size: 14px;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
+  font-size: 0.9375rem;
   font-weight: 500;
-  color: var(--color-text);
+  color: var(--text-primary);
+  font-family: var(--font-serif);
 }
 
-/* Custom dropdown styles are in CustomDropdown.css */
-
+/* Theme selection */
 .theme-options {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 .theme-option {
@@ -126,51 +136,53 @@
   align-items: center;
   justify-content: center;
   gap: 6px;
-  padding: 12px;
-  background: var(--color-bg);
-  border: 2px solid var(--color-border);
-  border-radius: 8px;
+  padding: var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
   cursor: pointer;
   transition: all 0.2s ease;
-  font-size: 13px;
-  color: var(--color-text);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  font-family: var(--font-serif);
 }
 
 .theme-option:hover {
-  border-color: var(--color-primary);
-  background: var(--color-bg-tertiary);
+  border-color: var(--ink-sage);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .theme-option:hover {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .theme-option.active {
-  border-color: var(--color-primary);
-  background: rgba(66, 99, 235, 0.1);
-  color: var(--color-primary);
+  border-color: var(--ink-sage);
+  background: transparent;
+  color: var(--ink-sage);
 }
 
 .setting-description {
-  margin-top: 12px;
-  padding: 12px;
-  background: var(--color-bg);
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
+  margin-top: var(--spacing-md);
+  padding: var(--spacing-md);
+  background: rgba(0, 0, 0, 0.02);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--line-color);
+}
+
+[data-theme="dark"] .setting-description {
+  background: rgba(255, 255, 255, 0.02);
 }
 
 .setting-description p {
   margin: 0 0 4px 0;
-  font-size: 12px;
+  font-size: 0.75rem;
   color: var(--color-text-secondary);
   line-height: 1.5;
+  font-family: var(--font-sans);
+  opacity: 0.8;
 }
 
 .setting-description p:last-child {
   margin-bottom: 0;
-}
-
-/* Dark theme adjustments */
-[data-theme="dark"] .settings-modal {
-  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
-}
-
-[data-theme="dark"] .theme-option.active {
-  background: rgba(76, 110, 245, 0.15);
 }
