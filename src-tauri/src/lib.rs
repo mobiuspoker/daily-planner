@@ -10,8 +10,25 @@ pub fn run() {
         .plugin(tauri_plugin_shell::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_process::init())
-        .setup(|_app| {
-            // Tray icon will be created from the frontend
+        .plugin(tauri_plugin_os::init())
+        .setup(|app| {
+            // Platform-specific window setup
+            #[cfg(target_os = "macos")]
+            {
+                use tauri::Manager;
+                let window = app.get_webview_window("main").unwrap();
+                // On macOS, use native decorations for rounded corners
+                window.set_decorations(true).unwrap();
+            }
+            
+            #[cfg(target_os = "windows")]
+            {
+                use tauri::Manager;
+                let window = app.get_webview_window("main").unwrap();
+                // On Windows, keep custom titlebar
+                window.set_decorations(false).unwrap();
+            }
+            
             Ok(())
         })
         .invoke_handler(tauri::generate_handler![])

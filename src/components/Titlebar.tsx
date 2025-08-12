@@ -1,10 +1,17 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { Minus, Square, X } from "lucide-react";
 import iconPath from "../assets/icon.png";
+import { useEffect, useState } from "react";
+import { platform } from "@tauri-apps/plugin-os";
 import "./Titlebar.css";
 
 export function Titlebar() {
   const appWindow = getCurrentWindow();
+  const [isMac, setIsMac] = useState(false);
+  
+  useEffect(() => {
+    platform().then(p => setIsMac(p === 'macos'));
+  }, []);
   
   const handleMinimize = () => {
     appWindow.minimize();
@@ -18,6 +25,9 @@ export function Titlebar() {
     appWindow.close();
   };
 
+  // Don't show custom titlebar on macOS
+  if (isMac) return null;
+  
   return (
     <div className="titlebar" data-tauri-drag-region>
       <div className="titlebar-title" data-tauri-drag-region>
