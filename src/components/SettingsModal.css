@@ -246,8 +246,8 @@
 
 /* Folder Button */
 .folder-button {
-  min-width: 150px;
-  max-width: 250px;
+  flex: 1;
+  max-width: 350px;
   padding: var(--spacing-sm) var(--spacing-md);
   background: transparent;
   border: 1px solid var(--line-color);
@@ -276,8 +276,8 @@
 .api-key-input {
   display: flex;
   gap: var(--spacing-sm);
-  min-width: 200px;
-  max-width: 300px;
+  flex: 1;
+  max-width: 350px;
 }
 
 .api-key-input input {
@@ -311,4 +311,10 @@
 .api-key-input .toggle-visibility:hover {
   border-color: var(--ink-sage);
   color: var(--ink-sage);
+}
+
+/* Dropdown constraints in settings */
+.setting-item .custom-dropdown {
+  max-width: 150px;
+  min-width: 120px;
 }

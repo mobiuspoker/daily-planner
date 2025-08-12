@@ -19,6 +19,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [summaryWeeklyEnabled, setSummaryWeeklyEnabled] = useState(false);
   const [summaryMonthlyEnabled, setSummaryMonthlyEnabled] = useState(false);
   const [summaryTime, setSummaryTime] = useState("08:00");
+  const [summaryWeeklyDay, setSummaryWeeklyDay] = useState(1);
+  const [summaryMonthlyDay, setSummaryMonthlyDay] = useState(1);
   const [summaryFolder, setSummaryFolder] = useState("");
   const [aiProvider, setAiProvider] = useState("none");
   const [aiApiKey, setAiApiKey] = useState("");
@@ -31,6 +33,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       const weeklyEnabled = getSetting<boolean>("summaryWeeklyEnabled") ?? true;
       const monthlyEnabled = getSetting<boolean>("summaryMonthlyEnabled") ?? true;
       const time = getSetting<string>("summaryTime") || "08:00";
+      const weeklyDay = getSetting<number>("summaryWeeklyDay") ?? 1;
+      const monthlyDay = getSetting<number>("summaryMonthlyDay") ?? 1;
       const folder = getSetting<string>("summaryDestinationFolder") || "";
       const provider = getSetting<string>("aiProvider") || "none";
       const key = getSetting<string>("aiApiKey") || "";
@@ -40,6 +44,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       setSummaryWeeklyEnabled(weeklyEnabled);
       setSummaryMonthlyEnabled(monthlyEnabled);
       setSummaryTime(time);
+      setSummaryWeeklyDay(weeklyDay);
+      setSummaryMonthlyDay(monthlyDay);
       setSummaryFolder(folder);
       setAiProvider(provider);
       setAiApiKey(key);
@@ -73,6 +79,16 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const handleSummaryTimeChange = async (time: string) => {
     setSummaryTime(time);
     await updateSetting("summaryTime", time);
+  };
+
+  const handleSummaryWeeklyDayChange = async (day: number) => {
+    setSummaryWeeklyDay(day);
+    await updateSetting("summaryWeeklyDay", day);
+  };
+
+  const handleSummaryMonthlyDayChange = async (day: number) => {
+    setSummaryMonthlyDay(day);
+    await updateSetting("summaryMonthlyDay", day);
   };
 
   const handleChooseFolder = async () => {
@@ -220,27 +236,81 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               </label>
             </div>
 
-            <div className="setting-item">
-              <label htmlFor="summary-time">
-                <Clock size={16} />
-                Summary Time
-              </label>
-              <CustomDropdown
-                id="summary-time"
-                value={summaryTime}
-                options={[
-                  { value: "06:00", label: "6:00 AM" },
-                  { value: "07:00", label: "7:00 AM" },
-                  { value: "08:00", label: "8:00 AM" },
-                  { value: "09:00", label: "9:00 AM" },
-                  { value: "17:00", label: "5:00 PM" },
-                  { value: "18:00", label: "6:00 PM" },
-                  { value: "19:00", label: "7:00 PM" },
-                  { value: "20:00", label: "8:00 PM" }
-                ]}
-                onChange={(value) => handleSummaryTimeChange(value as string)}
-              />
-            </div>
+            {(summaryWeeklyEnabled || summaryMonthlyEnabled) && (
+              <>
+                {summaryWeeklyEnabled && (
+                  <div className="setting-item">
+                    <label htmlFor="weekly-day">
+                      <Calendar size={16} />
+                      Weekly Day
+                    </label>
+                    <CustomDropdown
+                      id="weekly-day"
+                      value={summaryWeeklyDay}
+                      options={[
+                        { value: 1, label: "Monday" },
+                        { value: 2, label: "Tuesday" },
+                        { value: 3, label: "Wednesday" },
+                        { value: 4, label: "Thursday" },
+                        { value: 5, label: "Friday" },
+                        { value: 6, label: "Saturday" },
+                        { value: 0, label: "Sunday" }
+                      ]}
+                      onChange={(value) => handleSummaryWeeklyDayChange(value as number)}
+                    />
+                  </div>
+                )}
+
+                {summaryMonthlyEnabled && (
+                  <div className="setting-item">
+                    <label htmlFor="monthly-day">
+                      <Calendar size={16} />
+                      Monthly Day
+                    </label>
+                    <CustomDropdown
+                      id="monthly-day"
+                      value={summaryMonthlyDay}
+                      options={[
+                        { value: 1, label: "1st" },
+                        { value: 2, label: "2nd" },
+                        { value: 3, label: "3rd" },
+                        { value: 4, label: "4th" },
+                        { value: 5, label: "5th" },
+                        { value: 10, label: "10th" },
+                        { value: 15, label: "15th" },
+                        { value: 20, label: "20th" },
+                        { value: 25, label: "25th" },
+                        { value: 28, label: "28th" },
+                        { value: -1, label: "Last day" }
+                      ]}
+                      onChange={(value) => handleSummaryMonthlyDayChange(value as number)}
+                    />
+                  </div>
+                )}
+
+                <div className="setting-item">
+                  <label htmlFor="summary-time">
+                    <Clock size={16} />
+                    Summary Time
+                  </label>
+                  <CustomDropdown
+                    id="summary-time"
+                    value={summaryTime}
+                    options={[
+                      { value: "06:00", label: "6:00 AM" },
+                      { value: "07:00", label: "7:00 AM" },
+                      { value: "08:00", label: "8:00 AM" },
+                      { value: "09:00", label: "9:00 AM" },
+                      { value: "17:00", label: "5:00 PM" },
+                      { value: "18:00", label: "6:00 PM" },
+                      { value: "19:00", label: "7:00 PM" },
+                      { value: "20:00", label: "8:00 PM" }
+                    ]}
+                    onChange={(value) => handleSummaryTimeChange(value as string)}
+                  />
+                </div>
+              </>
+            )}
 
             <div className="setting-item">
               <label>

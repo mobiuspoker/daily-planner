@@ -11,6 +11,8 @@ type SettingKey =
   | "aiApiKey"
   | "summaryWeeklyEnabled"
   | "summaryMonthlyEnabled"
+  | "summaryWeeklyDay" // 1=Mon..6=Sat, 0=Sun
+  | "summaryMonthlyDay" // 1..28 or -1 for last day
   | "summaryTime" // "HH:mm"
   | "summaryDestinationFolder";
 
@@ -21,8 +23,10 @@ const DEFAULT_SETTINGS: Partial<Record<SettingKey, any>> = {
   startOnLogin: false,
   globalHotkey: "CommandOrControl+Shift+A",
   aiProvider: "none",
-  summaryWeeklyEnabled: false,
-  summaryMonthlyEnabled: false,
+  summaryWeeklyEnabled: true,
+  summaryMonthlyEnabled: true,
+  summaryWeeklyDay: 1, // Monday
+  summaryMonthlyDay: 1, // 1st
   summaryTime: "08:00",
   summaryDestinationFolder: "" // Empty means use default app data/summaries folder
 };
