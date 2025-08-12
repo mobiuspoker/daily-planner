@@ -5,6 +5,7 @@ import { QuickAddModal } from "./components/QuickAddModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { Titlebar } from "./components/Titlebar";
 import { AppMenu } from "./components/AppMenuSimple";
+import { ChevronLeft } from "lucide-react";
 import { useThemeStore } from "./state/themeStore";
 import { useTaskStore } from "./state/taskStore";
 import { useSettingsStore } from "./state/settingsStore";
@@ -67,7 +68,16 @@ function App() {
     <div className={`app ${theme}`}>
       <Titlebar />
       <header className="app-header">
-        <h1>{currentDate}</h1>
+        {showHistory ? (
+          <h1>
+            <button className="inline-back-button" onClick={() => setShowHistory(false)} aria-label="Back">
+              <ChevronLeft size={20} />
+            </button>
+            History
+          </h1>
+        ) : (
+          <h1>{currentDate}</h1>
+        )}
         <AppMenu
           onOpenHistory={() => setShowHistory(true)}
           onOpenSummaries={() => setShowSummaries(true)}
@@ -84,7 +94,7 @@ function App() {
         )}
         
         {showHistory && (
-          <HistoryViewer onClose={() => setShowHistory(false)} />
+          <HistoryViewer />
         )}
         
         {showSummaries && (

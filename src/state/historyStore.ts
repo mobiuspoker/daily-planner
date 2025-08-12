@@ -23,7 +23,7 @@ interface HistoryStore {
   
   loadDays: (limit?: number, offset?: number) => Promise<void>;
   loadMonthDays: (year: number, month: number) => Promise<void>;
-  selectDay: (day: string) => Promise<void>;
+  selectDay: (day: string | null) => Promise<void>;
   searchInDay: (text: string) => Promise<void>;
   searchAll: (text: string) => Promise<void>;
   clearSearch: () => void;
@@ -69,7 +69,11 @@ export const useHistoryStore = create<HistoryStore>((set, get) => ({
     }
   },
   
-  selectDay: async (day: string) => {
+  selectDay: async (day: string | null) => {
+    if (!day) {
+      set({ selectedDay: null });
+      return;
+    }
     set({ loading: true, error: null, selectedDay: day });
     try {
       const items = await getByDay(day, get().searchQuery || undefined);
