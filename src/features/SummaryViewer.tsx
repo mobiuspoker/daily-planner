@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { readTextFile } from '@tauri-apps/plugin-fs';
 import { 
   listSummaryFiles, 
@@ -8,14 +8,24 @@ import {
 } from '../services/summaryService';
 import { generateWeeklyNow, generateMonthlyNow } from '../services/summaryScheduler';
 import { setSetting } from '../services/settingsService';
-import { Trash2, CalendarDays, Calendar, Copy } from 'lucide-react';
+import { Trash2, CalendarDays, Calendar, Copy, ChevronLeft, ChevronRight, Search } from 'lucide-react';
+import { CustomDropdown } from '../components/CustomDropdown';
 import './SummaryViewer.css';
+
+const ITEMS_PER_PAGE = 5;
 
 export const SummaryViewer: React.FC = () => {
   const [files, setFiles] = useState<SummaryFile[]>([]);
   const [selectedFile, setSelectedFile] = useState<SummaryFile | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  
+  // Search and filter state
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterType, setFilterType] = useState<'all' | 'weekly' | 'monthly'>('all');
 
   useEffect(() => {
     loadFiles();
@@ -28,6 +38,11 @@ export const SummaryViewer: React.FC = () => {
       setFileContent('');
     }
   }, [selectedFile]);
+
+  useEffect(() => {
+    // Reset to first page when search/filter changes
+    setCurrentPage(1);
+  }, [searchTerm, filterType]);
 
   const loadFiles = async () => {
     try {
@@ -104,11 +119,63 @@ export const SummaryViewer: React.FC = () => {
       const parts = fileName.replace('monthly-', '').replace('.md', '').split('-');
       const year = parts[0];
       const month = parseInt(parts[1]);
-      const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 
+                         'July', 'August', 'September', 'October', 'November', 'December'];
       return `${monthNames[month - 1]} ${year}`;
     }
     return fileName;
   };
+
+  // Calculate counts for each type
+  const typeCounts = useMemo(() => {
+    const counts = {
+      all: files.length,
+      weekly: files.filter(f => f.type === 'weekly').length,
+      monthly: files.filter(f => f.type === 'monthly').length
+    };
+    return counts;
+  }, [files]);
+
+  // Filter and search logic
+  const filteredFiles = useMemo(() => {
+    let filtered = [...files];
+    
+    // Apply type filter
+    if (filterType !== 'all') {
+      filtered = filtered.filter(file => file.type === filterType);
+    }
+    
+    // Apply search term
+    if (searchTerm) {
+      const searchLower = searchTerm.toLowerCase();
+      filtered = filtered.filter(file => {
+        const label = formatFileLabel(file.name).toLowerCase();
+        return label.includes(searchLower);
+      });
+    }
+    
+    return filtered;
+  }, [files, filterType, searchTerm]);
+
+  // Sort and paginate files
+  const sortedAndPaginatedFiles = useMemo(() => {
+    // Sort files: monthly first, then by date descending
+    const sorted = [...filteredFiles].sort((a, b) => {
+      if (a.type !== b.type) {
+        return a.type === 'monthly' ? -1 : 1;
+      }
+      return b.name.localeCompare(a.name);
+    });
+    
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    const endIndex = startIndex + ITEMS_PER_PAGE;
+    return sorted.slice(startIndex, endIndex);
+  }, [filteredFiles, currentPage]);
+
+  // Calculate total pages
+  const totalPages = useMemo(() => {
+    return Math.ceil(filteredFiles.length / ITEMS_PER_PAGE);
+  }, [filteredFiles]);
 
   const renderMarkdown = (content: string): string => {
     let html = content
@@ -134,6 +201,31 @@ export const SummaryViewer: React.FC = () => {
     return html;
   };
 
+  const renderFileItem = (file: SummaryFile) => (
+    <div
+      key={file.path}
+      className={`summary-file-item ${selectedFile?.path === file.path ? 'selected' : ''}`}
+      onClick={() => setSelectedFile(file)}
+    >
+      {file.type === 'weekly' ? (
+        <CalendarDays size={18} className="file-type-icon" />
+      ) : (
+        <Calendar size={18} className="file-type-icon" />
+      )}
+      <span className="file-label">{formatFileLabel(file.name)}</span>
+      <span className="file-type-badge">
+        {file.type === 'weekly' ? 'W' : 'M'}
+      </span>
+      <button
+        className="delete-button"
+        onClick={(e) => handleDelete(file, e)}
+        aria-label="Delete summary"
+      >
+        <Trash2 size={16} />
+      </button>
+    </div>
+  );
+
   return (
     <div className="summary-viewer">
       <div className="summary-content">
@@ -154,36 +246,82 @@ export const SummaryViewer: React.FC = () => {
           </button>
         </div>
 
+        <div className="summary-controls">
+          <div className="search-container">
+            <Search size={16} className="search-icon" />
+            <input
+              type="text"
+              placeholder="Search summaries..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="search-input"
+            />
+          </div>
+          
+          <CustomDropdown
+            id="filter-type"
+            value={filterType}
+            options={[
+              { value: 'all', label: `All Summaries (${typeCounts.all})` },
+              { value: 'weekly', label: `Weekly Only (${typeCounts.weekly})` },
+              { value: 'monthly', label: `Monthly Only (${typeCounts.monthly})` }
+            ]}
+            onChange={(value) => setFilterType(value as 'all' | 'weekly' | 'monthly')}
+          />
+        </div>
+
         <div className="summary-files">
-          {files.length === 0 && !selectedFile ? (
+          {filteredFiles.length === 0 && !selectedFile ? (
             <div className="empty-state">
-              <p>No summaries yet</p>
-              <p className="empty-hint">Generate your first weekly or monthly summary above</p>
+              <p>{searchTerm || filterType !== 'all' ? 'No summaries match your criteria' : 'No summaries yet'}</p>
+              <p className="empty-hint">
+                {searchTerm || filterType !== 'all' 
+                  ? 'Try adjusting your search or filters' 
+                  : 'Generate your first weekly or monthly summary above'}
+              </p>
             </div>
           ) : (
-            files.map((file) => (
-              <div
-                key={file.path}
-                className={`summary-file-item ${selectedFile?.path === file.path ? 'selected' : ''}`}
-                onClick={() => setSelectedFile(file)}
-              >
-                {file.type === 'weekly' ? (
-                  <CalendarDays size={18} className="file-type-icon" />
-                ) : (
-                  <Calendar size={18} className="file-type-icon" />
-                )}
-                <span className="file-label">{formatFileLabel(file.name)}</span>
-                <button
-                  className="delete-button"
-                  onClick={(e) => handleDelete(file, e)}
-                  aria-label="Delete summary"
-                >
-                  <Trash2 size={16} />
-                </button>
-              </div>
-            ))
+            sortedAndPaginatedFiles.map(file => renderFileItem(file))
           )}
         </div>
+
+        {totalPages > 1 && (
+          <div className="pagination-controls">
+            <button
+              onClick={() => setCurrentPage(1)}
+              disabled={currentPage === 1}
+              className="pagination-button"
+              aria-label="First page"
+            >
+              First
+            </button>
+            <button
+              onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+              disabled={currentPage === 1}
+              className="pagination-button"
+            >
+              <ChevronLeft size={16} />
+            </button>
+            <span className="pagination-info">
+              Page {currentPage} of {totalPages}
+            </span>
+            <button
+              onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+              disabled={currentPage === totalPages}
+              className="pagination-button"
+            >
+              <ChevronRight size={16} />
+            </button>
+            <button
+              onClick={() => setCurrentPage(totalPages)}
+              disabled={currentPage === totalPages}
+              className="pagination-button"
+              aria-label="Last page"
+            >
+              Last
+            </button>
+          </div>
+        )}
 
         {selectedFile && (
           <div className="summary-preview">

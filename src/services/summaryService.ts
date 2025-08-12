@@ -91,7 +91,10 @@ async function generateMarkdown(
   
   let markdown = `# ${type === 'weekly' ? 'Weekly' : 'Monthly'} Summary\n\n`;
   markdown += `${dateRange}\n`;
-  markdown += `Generated ${DateTime.now().toFormat('EEEE, MMMM d \'at\' h:mm a').toLowerCase()}\n\n`;
+  const now = DateTime.now();
+  const formattedDate = now.toFormat('EEEE, MMMM d \'at\' h:mm');
+  const period = now.toFormat('a').toLowerCase();
+  markdown += `Generated ${formattedDate} ${period}\n\n`;
   
   const totalTasks = tasks.length;
   
