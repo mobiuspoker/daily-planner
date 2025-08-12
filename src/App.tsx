@@ -74,14 +74,20 @@ function App() {
       <header className="app-header">
         {showHistory ? (
           <h1>
-            <button className="inline-back-button" onClick={() => setShowHistory(false)} aria-label="Back">
+            <button className="inline-back-button" onClick={() => {
+              setShowHistory(false);
+              setShowSummaries(false);
+            }} aria-label="Back">
               <ChevronLeft size={20} />
             </button>
             History
           </h1>
         ) : showSummaries ? (
           <h1>
-            <button className="inline-back-button" onClick={() => setShowSummaries(false)} aria-label="Back">
+            <button className="inline-back-button" onClick={() => {
+              setShowSummaries(false);
+              setShowHistory(false);
+            }} aria-label="Back">
               <ChevronLeft size={20} />
             </button>
             Summaries
@@ -90,8 +96,14 @@ function App() {
           <h1>{currentDate}</h1>
         )}
         <AppMenu
-          onOpenHistory={() => setShowHistory(true)}
-          onOpenSummaries={() => setShowSummaries(true)}
+          onOpenHistory={() => {
+            setShowHistory(true);
+            setShowSummaries(false);
+          }}
+          onOpenSummaries={() => {
+            setShowSummaries(true);
+            setShowHistory(false);
+          }}
           onOpenSettings={() => setIsSettingsOpen(true)}
           onRunMidnightClear={handleRunMidnightClear}
         />

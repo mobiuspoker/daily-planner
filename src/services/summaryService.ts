@@ -90,8 +90,8 @@ async function generateMarkdown(
   }, {} as Record<string, Record<string, typeof tasks>>);
   
   let markdown = `# ${type === 'weekly' ? 'Weekly' : 'Monthly'} Summary\n\n`;
-  markdown += `**Period:** ${dateRange}\n`;
-  markdown += `**Generated:** ${DateTime.now().toFormat('yyyy-MM-dd HH:mm')}\n\n`;
+  markdown += `${dateRange}\n`;
+  markdown += `Generated ${DateTime.now().toFormat('EEEE, MMMM d \'at\' h:mm a').toLowerCase()}\n\n`;
   
   const totalTasks = tasks.length;
   
@@ -108,19 +108,7 @@ async function generateMarkdown(
   
   // Statistics section
   markdown += '## Statistics\n\n';
-  markdown += `**Total Tasks Completed:** ${totalTasks}\n\n`;
-  
-  const listTotals = tasks.reduce((acc, task) => {
-    const list = task.sourceList || 'Unknown';
-    acc[list] = (acc[list] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
-  
-  markdown += '**Breakdown by List:**\n';
-  for (const [list, count] of Object.entries(listTotals)) {
-    const percentage = ((count / totalTasks) * 100).toFixed(1);
-    markdown += `- ${list}: ${count} tasks (${percentage}%)\n`;
-  }
+  markdown += `${totalTasks} tasks completed\n\n`;
   
   // Most productive day
   const dayTotals = Object.entries(groupedByDay).map(([day, lists]) => {
@@ -130,7 +118,7 @@ async function generateMarkdown(
   
   if (dayTotals.length > 0) {
     const mostProductiveDay = DateTime.fromISO(dayTotals[0].day).toFormat('EEEE, MMMM d');
-    markdown += `\n**Most Productive Day:** ${mostProductiveDay} (${dayTotals[0].total} tasks)\n`;
+    markdown += `Most productive: ${mostProductiveDay} with ${dayTotals[0].total} tasks\n`;
   }
   
   // Detailed task list
@@ -138,22 +126,20 @@ async function generateMarkdown(
   
   const sortedDays = Object.keys(groupedByDay).sort();
   for (const day of sortedDays) {
-    const dayDate = DateTime.fromISO(day).toFormat('EEEE, MMMM d, yyyy');
-    markdown += `### ${dayDate}\n\n`;
-    
+    const dayDate = DateTime.fromISO(day).toFormat('EEEE, MMMM d');
     const lists = groupedByDay[day];
-    let dayTotal = 0;
+    const dayTotal = Object.values(lists).reduce((sum, tasks) => sum + tasks.length, 0);
     
-    for (const [listName, listTasks] of Object.entries(lists)) {
-      markdown += `**${listName}** (${listTasks.length})\n`;
-      for (const task of listTasks) {
-        markdown += `- ${task.title}\n`;
-      }
-      markdown += '\n';
-      dayTotal += listTasks.length;
+    markdown += `### ${dayDate} — ${dayTotal} ${dayTotal === 1 ? 'task' : 'tasks'}\n\n`;
+    
+    // Combine all tasks without distinguishing by list
+    const allTasks = Object.values(lists).flat();
+    let taskNumber = 1;
+    for (const task of allTasks) {
+      markdown += `${taskNumber}. ${task.title}\n`;
+      taskNumber++;
     }
-    
-    markdown += `*Day Total: ${dayTotal} tasks*\n\n`;
+    markdown += '\n';
   }
   
   return markdown;

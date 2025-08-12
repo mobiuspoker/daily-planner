@@ -42,7 +42,7 @@ async function getNextMonthlyTime(): Promise<DateTime> {
 }
 
 async function shouldCatchUpWeekly(): Promise<boolean> {
-  const enabled = await getSetting('summaryWeeklyEnabled');
+  const enabled = await getSetting('summaryWeeklyEnabled') ?? true;
   if (!enabled) return false;
   
   const timeStr = await getSetting('summaryTime') || '08:00';
@@ -68,7 +68,7 @@ async function shouldCatchUpWeekly(): Promise<boolean> {
 }
 
 async function shouldCatchUpMonthly(): Promise<boolean> {
-  const enabled = await getSetting('summaryMonthlyEnabled');
+  const enabled = await getSetting('summaryMonthlyEnabled') ?? true;
   if (!enabled) return false;
   
   const timeStr = await getSetting('summaryTime') || '08:00';
@@ -99,7 +99,7 @@ async function scheduleWeekly() {
     weeklyTimer = null;
   }
   
-  const enabled = await getSetting('summaryWeeklyEnabled');
+  const enabled = await getSetting('summaryWeeklyEnabled') ?? true;
   if (!enabled) return;
   
   const nextTime = await getNextWeeklyTime();
@@ -126,7 +126,7 @@ async function scheduleMonthly() {
     monthlyTimer = null;
   }
   
-  const enabled = await getSetting('summaryMonthlyEnabled');
+  const enabled = await getSetting('summaryMonthlyEnabled') ?? true;
   if (!enabled) return;
   
   const nextTime = await getNextMonthlyTime();

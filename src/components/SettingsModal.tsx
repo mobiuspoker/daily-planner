@@ -28,8 +28,8 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     if (isOpen) {
       const lead = getSetting<number>("reminderLeadMinutes") || 15;
       const overdue = getSetting<number>("overdueWindowMinutes") || 60;
-      const weeklyEnabled = getSetting<boolean>("summaryWeeklyEnabled") || false;
-      const monthlyEnabled = getSetting<boolean>("summaryMonthlyEnabled") || false;
+      const weeklyEnabled = getSetting<boolean>("summaryWeeklyEnabled") ?? true;
+      const monthlyEnabled = getSetting<boolean>("summaryMonthlyEnabled") ?? true;
       const time = getSetting<string>("summaryTime") || "08:00";
       const folder = getSetting<string>("summaryDestinationFolder") || "";
       const provider = getSetting<string>("aiProvider") || "none";
@@ -185,9 +185,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               />
             </div>
             
-            <div className="setting-description">
-              <p>Set how early you want reminders, or turn them off.</p>
-            </div>
           </div>
 
           {/* Summaries Section */}
