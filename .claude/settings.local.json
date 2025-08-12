@@ -12,7 +12,9 @@
       "Bash(git push:*)",
       "Bash(git tag:*)",
       "Bash(gh api:*)",
-      "Bash(gh release download:*)"
+      "Bash(gh release download:*)",
+      "Bash(gh run list:*)",
+      "Bash(gh run watch:*)"
     ],
     "deny": []
   }

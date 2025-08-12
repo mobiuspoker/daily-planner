@@ -20,8 +20,18 @@ This project uses GitHub Actions to automatically build the Daily Planner app fo
 
 ## How to Create a Release
 
-1. **Update version numbers** (both in package.json and src-tauri/Cargo.toml):
+### ⚠️ IMPORTANT: Update versions BEFORE creating tags!
+The version numbers in your config files MUST be updated before pushing a tag, otherwise the installers will have incorrect version numbers.
+
+1. **Update version numbers in ALL THREE places**:
    ```bash
+   # Manual update (recommended for clarity):
+   # Edit these files and change version to match your release (e.g., "0.1.4"):
+   # - package.json (line ~4: "version": "0.1.4")
+   # - src-tauri/tauri.conf.json (line ~4: "version": "0.1.4")
+   # - src-tauri/Cargo.toml (line ~3: version = "0.1.4")
+   
+   # OR use automated scripts:
    # For bug fixes (0.1.0 -> 0.1.1)
    npm run version:patch
    
@@ -32,26 +42,31 @@ This project uses GitHub Actions to automatically build the Daily Planner app fo
    npm run version:major
    ```
    
-   Note: You'll need to install `cargo-edit` first:
+   Note: For automated scripts, you'll need to install `cargo-edit` first:
    ```bash
    cargo install cargo-edit
    ```
 
-2. **Commit the version changes**:
+2. **Commit and push the version changes**:
    ```bash
    git add .
    git commit -m "chore: bump version to v0.2.0"
    git push
    ```
 
-3. **Create and push a tag**:
+3. **ONLY NOW create and push a tag**:
    ```bash
    git tag v0.2.0 -m "Release description"
    git push origin v0.2.0
    ```
    
-   **If you need to update a tag** (e.g., to fix a build error):
+   **If you need to update a tag** (e.g., forgot to update versions):
    ```bash
+   # First, update the version numbers in all config files
+   # Then commit and push those changes
+   git add . && git commit -m "chore: bump version to v0.2.0" && git push
+   
+   # Now delete and recreate the tag
    git tag -d v0.2.0                    # Delete local tag
    git push origin :refs/tags/v0.2.0    # Delete remote tag
    git tag v0.2.0 -m "Updated release"  # Recreate tag
@@ -59,14 +74,16 @@ This project uses GitHub Actions to automatically build the Daily Planner app fo
    ```
 
 4. **GitHub Actions will automatically**:
-   - Build the app for all platforms
-   - Create a draft release
-   - Upload all executables to the release
+   - Build the app for all platforms with the correct version
+   - Create a draft release named "Daily Planner vX.X.X"
+   - Upload all executables to the draft release
 
-5. **Go to GitHub Releases**:
-   - Edit the draft release
+5. **Publish the release**:
+   - Go to [GitHub Releases](https://github.com/mobiuspoker/daily-planner/releases)
+   - Find the draft release (marked as "Draft")
+   - Click "Edit" → Review the assets have correct version numbers
    - Add release notes
-   - Publish the release
+   - Click "Publish release"
 
 ## Manual Trigger
 
@@ -90,6 +107,22 @@ The workflow builds:
   - `.AppImage` for universal Linux
 
 ## Troubleshooting
+
+### Version Mismatch in Installers
+If your installers show the wrong version (e.g., v0.1.0 when you released v0.1.4):
+1. You forgot to update version numbers before creating the tag
+2. **Fix**: 
+   - Update all three version files (package.json, tauri.conf.json, Cargo.toml)
+   - Commit and push the changes
+   - Delete and recreate the tag (see step 3 above)
+   - Wait for GitHub Actions to rebuild (~10 minutes)
+   - The new draft release will have correct versions
+
+### Multiple Draft Releases
+If you see multiple draft releases for the same version:
+- GitHub Actions creates a new draft each time the workflow runs
+- Simply delete the old drafts and keep the newest one
+- Check asset filenames to ensure they have the correct version
 
 ### If builds fail:
 1. Check the Actions tab for error logs
