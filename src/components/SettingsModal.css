@@ -109,6 +109,9 @@
 }
 
 .setting-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: var(--spacing-md);
 }
 
@@ -116,7 +119,6 @@
   display: flex;
   align-items: center;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-sm);
   font-size: 0.9375rem;
   font-weight: 500;
   color: var(--text-primary);
@@ -185,4 +187,116 @@
 
 .setting-description p:last-child {
   margin-bottom: 0;
+}
+
+/* Toggle Switch */
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 24px;
+  margin-left: auto;
+}
+
+.toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--line-color);
+  transition: 0.3s;
+  border-radius: 24px;
+}
+
+.toggle-slider:before {
+  position: absolute;
+  content: "";
+  height: 18px;
+  width: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: 0.3s;
+  border-radius: 50%;
+}
+
+.toggle-switch input:checked + .toggle-slider {
+  background-color: var(--ink-sage);
+}
+
+.toggle-switch input:checked + .toggle-slider:before {
+  transform: translateX(20px);
+}
+
+/* Folder Button */
+.folder-button {
+  width: 100%;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-align: left;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.folder-button:hover {
+  border-color: var(--ink-sage);
+  background: rgba(0, 0, 0, 0.02);
+}
+
+[data-theme="dark"] .folder-button:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+/* API Key Input */
+.api-key-input {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.api-key-input input {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-family: monospace;
+  font-size: 0.875rem;
+}
+
+.api-key-input input::placeholder {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.api-key-input .toggle-visibility {
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.api-key-input .toggle-visibility:hover {
+  border-color: var(--ink-sage);
+  color: var(--ink-sage);
 }

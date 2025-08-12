@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { UnifiedTaskList } from "./features/UnifiedTaskList";
 import { HistoryViewer } from "./features/HistoryViewer";
+import { SummaryViewer } from "./features/SummaryViewer";
 import { QuickAddModal } from "./components/QuickAddModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { Titlebar } from "./components/Titlebar";
@@ -13,6 +14,7 @@ import { initializeDatabase } from "./db/database";
 import { setupNotifications } from "./services/notifications";
 import { setupMidnightClear, runMidnightClear } from "./services/midnightClear";
 import { setupGlobalHotkey, cleanupGlobalHotkey } from "./services/globalHotkey";
+import { setupSummaryScheduler, stopSummaryScheduler } from "./services/summaryScheduler";
 import { DateTime } from "luxon";
 import "./styles/App.css";
 
@@ -37,6 +39,7 @@ function App() {
       // await setupTrayMenu();
       await setupNotifications();
       await setupMidnightClear();
+      await setupSummaryScheduler();
       await setupGlobalHotkey(() => setIsQuickAddOpen(true));
       await initTheme();
     };
@@ -51,6 +54,7 @@ function App() {
     // Cleanup on unmount
     return () => {
       cleanupGlobalHotkey();
+      stopSummaryScheduler();
       clearInterval(interval);
     };
   }, [initTheme, loadTasks, loadSettings]);
@@ -75,6 +79,13 @@ function App() {
             </button>
             History
           </h1>
+        ) : showSummaries ? (
+          <h1>
+            <button className="inline-back-button" onClick={() => setShowSummaries(false)} aria-label="Back">
+              <ChevronLeft size={20} />
+            </button>
+            Summaries
+          </h1>
         ) : (
           <h1>{currentDate}</h1>
         )}
@@ -98,11 +109,7 @@ function App() {
         )}
         
         {showSummaries && (
-          <div className="summaries-placeholder">
-            <button onClick={() => setShowSummaries(false)}>← Back to Tasks</button>
-            <h2>Summaries Viewer</h2>
-            <p>Summaries viewer will be implemented in T7</p>
-          </div>
+          <SummaryViewer />
         )}
       </main>
       
