@@ -10,6 +10,7 @@ import {
   FileText
 } from "lucide-react";
 import { Command } from "@tauri-apps/plugin-shell";
+import { open } from "@tauri-apps/plugin-shell";
 import { mkdir } from "@tauri-apps/plugin-fs";
 import { appDataDir } from "@tauri-apps/api/path";
 import { exportData, importData } from "../services/importExportService";
@@ -71,9 +72,8 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
   const openDataFolder = async () => {
     try {
       const dataDir = await appDataDir();
-      // Open folder in Windows Explorer using process plugin
-      const command = Command.create("explorer", [dataDir]);
-      await command.execute();
+      // Open folder using shell open (works on all platforms)
+      await open(dataDir);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to open data folder:", error);
@@ -97,9 +97,8 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
         // Folder might already exist, that's fine
       }
       
-      // Open folder in Windows Explorer using process plugin
-      const command = Command.create("explorer", [summariesPath]);
-      await command.execute();
+      // Open folder using shell open (works on all platforms)
+      await open(summariesPath);
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to open summaries folder:", error);
