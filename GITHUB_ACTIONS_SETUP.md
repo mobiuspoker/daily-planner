@@ -46,8 +46,16 @@ This project uses GitHub Actions to automatically build the Daily Planner app fo
 
 3. **Create and push a tag**:
    ```bash
-   git tag v0.2.0
+   git tag v0.2.0 -m "Release description"
    git push origin v0.2.0
+   ```
+   
+   **If you need to update a tag** (e.g., to fix a build error):
+   ```bash
+   git tag -d v0.2.0                    # Delete local tag
+   git push origin :refs/tags/v0.2.0    # Delete remote tag
+   git tag v0.2.0 -m "Updated release"  # Recreate tag
+   git push origin v0.2.0                # Push new tag
    ```
 
 4. **GitHub Actions will automatically**:
@@ -90,11 +98,52 @@ The workflow builds:
    - **Linux**: Missing system dependencies (automatically installed)
    - **Windows**: Usually works without issues
 
-### Code Signing (Optional)
-For production releases, you may want to:
-- **macOS**: Add Apple Developer certificates
-- **Windows**: Add code signing certificate
+### macOS "Damaged App" or "Cannot Check for Malicious Software" Errors
+
+These are normal for unsigned apps. Users need to:
+
+1. **Right-click method** (Recommended):
+   - Right-click the app in Applications
+   - Select "Open" from the menu
+   - Click "Open" in the security dialog
+   - This only needs to be done once
+
+2. **System Settings method**:
+   - Try to open the app normally (it will be blocked)
+   - Go to System Settings → Privacy & Security
+   - Click "Open Anyway" next to the app name
+   - Enter password and click "Open"
+
+### Important Notes for macOS Distribution
+
+- **Which installer to send**:
+  - Apple Silicon (M1/M2/M3/M4 Macs): Use `aarch64-apple-darwin.dmg`
+  - Intel Macs (2019 and earlier): Use `x86_64-apple-darwin.dmg`
+  - Users can check: Apple Menu → About This Mac → look for "Chip" or "Processor"
+
+- **Installation steps for macOS**:
+  1. Download the .dmg file
+  2. Open the .dmg
+  3. **Drag the app to Applications folder** (important!)
+  4. Eject the .dmg
+  5. Open Applications folder
+  6. Right-click the app and select "Open"
+
+- **Apps won't appear in Launchpad**: This is normal for unsigned apps. Use Spotlight (Cmd+Space) instead.
+
+### Code Signing (Optional but Recommended for Distribution)
+For production releases without security warnings:
+- **macOS**: $99/year Apple Developer Program for signing + notarization
+- **Windows**: Code signing certificate from a CA
 - See [Tauri's signing guide](https://tauri.app/v1/guides/distribution/sign/)
+
+### Working with Private Repos
+
+- Private repos have private releases (404 error for non-authenticated users)
+- To share builds from private repos:
+  1. Download installers: `gh release download v0.1.0 --pattern "*.dmg"`
+  2. Share via Dropbox/Google Drive (ZIP first to preserve permissions)
+  3. Or make repo public: `gh repo edit owner/repo --visibility public --accept-visibility-change-consequences`
 
 ## Testing Locally
 
@@ -109,6 +158,24 @@ npm run tauri:build -- --target aarch64-apple-darwin
 
 # Linux
 npm run tauri:build
+```
+
+### Quick Commands Reference
+
+```bash
+# View releases
+gh release list
+gh release view v0.1.0 --web
+
+# Download release assets
+gh release download v0.1.0 --pattern "*.dmg"
+
+# Watch build progress
+gh run list --workflow=release.yml
+gh run watch
+
+# Check build status
+gh run list --limit 1
 ```
 
 ## Cost
