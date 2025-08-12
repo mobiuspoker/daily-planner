@@ -205,6 +205,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 onBlur={(e) => handleGlobalHotkeyChange(e.target.value)}
                 placeholder="e.g., Ctrl+Shift+A"
                 className="hotkey-input"
+                spellCheck={false}
               />
             </div>
             <div className="setting-description">

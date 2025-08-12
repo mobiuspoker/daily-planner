@@ -4,6 +4,7 @@ import { HistoryViewer } from "./features/HistoryViewer";
 import { SummaryViewer } from "./features/SummaryViewer";
 import { QuickAddModal } from "./components/QuickAddModal";
 import { SettingsModal } from "./components/SettingsModal";
+import { AboutModal } from "./components/AboutModal";
 import { Titlebar } from "./components/Titlebar";
 import { AppMenu } from "./components/AppMenuSimple";
 import { ChevronLeft } from "lucide-react";
@@ -24,6 +25,7 @@ function App() {
   const { loadSettings } = useSettingsStore();
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(DateTime.local().toFormat("EEEE, MMMM d, yyyy"));
   const [showHistory, setShowHistory] = useState(false);
   const [showSummaries, setShowSummaries] = useState(false);
@@ -97,6 +99,7 @@ function App() {
             setShowHistory(false);
           }}
           onOpenSettings={() => setIsSettingsOpen(true)}
+          onOpenAbout={() => setIsAboutOpen(true)}
         />
       </header>
       
@@ -124,6 +127,11 @@ function App() {
       <SettingsModal
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
+      />
+      
+      <AboutModal
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
       />
     </div>
   );

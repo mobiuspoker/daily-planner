@@ -51,7 +51,14 @@ export async function setupGlobalHotkey(onQuickAdd: () => void) {
     // Get the configured hotkey or use default
     const hotkey = (await getSetting('globalHotkey') || 'Ctrl+Shift+A') as string;
     
-    // Always try to unregister the current hotkey first
+    // If we already have this exact hotkey registered, just update the callback and return
+    if (currentHotkey === hotkey && await isRegistered(hotkey)) {
+      console.log(`Hotkey ${hotkey} already registered, skipping re-registration`);
+      isSetup = true;
+      return;
+    }
+    
+    // Always try to unregister any existing hotkey first
     if (currentHotkey) {
       try {
         const alreadyRegistered = await isRegistered(currentHotkey);
@@ -64,6 +71,16 @@ export async function setupGlobalHotkey(onQuickAdd: () => void) {
       }
     }
     
+    // Also try to unregister the target hotkey if it's somehow already registered
+    try {
+      if (await isRegistered(hotkey)) {
+        await unregister(hotkey);
+        console.log(`Cleaned up stale registration of ${hotkey}`);
+      }
+    } catch (e) {
+      // Ignore errors
+    }
+    
     // Register the new hotkey
     await register(hotkey, handleHotkey);
     currentHotkey = hotkey;
@@ -71,13 +88,22 @@ export async function setupGlobalHotkey(onQuickAdd: () => void) {
     isSetup = true;
     console.log(`Global hotkey ${hotkey} registered successfully`);
   } catch (error) {
-    console.error("Failed to register global hotkey:", error);
+    // Only log as error if it's not an "already registered" error
+    if (!error.toString().includes('already registered')) {
+      console.error("Failed to register global hotkey:", error);
+    }
     isSetup = false;
   }
 }
 
 export async function updateGlobalHotkey(newHotkey: string) {
   try {
+    // If it's the same hotkey, no need to do anything
+    if (currentHotkey === newHotkey) {
+      console.log(`Hotkey unchanged: ${newHotkey}`);
+      return;
+    }
+    
     // Unregister the current hotkey
     if (currentHotkey) {
       try {
@@ -91,13 +117,26 @@ export async function updateGlobalHotkey(newHotkey: string) {
       }
     }
     
+    // Try to clean up if the new hotkey is somehow already registered
+    try {
+      if (await isRegistered(newHotkey)) {
+        await unregister(newHotkey);
+        console.log(`Cleaned up existing registration of ${newHotkey}`);
+      }
+    } catch (e) {
+      // Ignore errors
+    }
+    
     // Register the new hotkey
     await register(newHotkey, handleHotkey);
     currentHotkey = newHotkey;
     
     console.log(`Updated global hotkey to: ${newHotkey}`);
   } catch (error) {
-    console.error("Failed to update global hotkey:", error);
+    // Only log as error if it's not an "already registered" error
+    if (!error.toString().includes('already registered')) {
+      console.error("Failed to update global hotkey:", error);
+    }
     
     // Try to re-register the old hotkey if update failed
     if (currentHotkey && currentHotkey !== newHotkey) {

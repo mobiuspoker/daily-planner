@@ -22,9 +22,10 @@ interface AppMenuProps {
   onOpenHistory: () => void;
   onOpenSummaries: () => void;
   onOpenSettings: () => void;
+  onOpenAbout: () => void;
 }
 
-export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings }: AppMenuProps) {
+export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpenAbout }: AppMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { getSetting } = useSettingsStore();
@@ -189,7 +190,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings }: AppM
             <button 
               className="menu-item"
               onClick={() => {
-                window.open("https://github.com/your-repo/task-planner", "_blank");
+                onOpenAbout();
                 setIsOpen(false);
               }}
             >

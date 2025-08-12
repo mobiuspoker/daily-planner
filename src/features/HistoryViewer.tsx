@@ -100,14 +100,15 @@ export function HistoryViewer() {
       <div className="history-wrapper">
         <div className="history-content">
         <div className="history-controls">
-          <div className="search-bar">
-            <Search size={16} />
+          <div className="search-container">
+            <Search size={16} className="search-icon" />
             <input
               type="text"
               placeholder="Search all history..."
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && handleSearch(e)}
+              className="search-input"
             />
             {localSearch && (
               <button 
