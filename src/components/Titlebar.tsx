@@ -10,7 +10,11 @@ export function Titlebar() {
   const [isMac, setIsMac] = useState(false);
   
   useEffect(() => {
-    platform().then(p => setIsMac(p === 'macos'));
+    async function checkPlatform() {
+      const p = await platform();
+      setIsMac(p === 'macos');
+    }
+    checkPlatform();
   }, []);
   
   const handleMinimize = () => {
