@@ -233,14 +233,14 @@ export const SummaryViewer: React.FC = () => {
             disabled={isLoading}
             className="summary-action-button"
           >
-            Generate Weekly
+            Generate Previous Week
           </button>
           <button 
             onClick={handleGenerateMonthly} 
             disabled={isLoading}
             className="summary-action-button"
           >
-            Generate Monthly
+            Generate Previous Month
           </button>
         </div>
 
