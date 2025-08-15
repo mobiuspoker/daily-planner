@@ -17,6 +17,7 @@ export const SummaryViewer: React.FC = () => {
   const [selectedFile, setSelectedFile] = useState<SummaryFile | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
   const [isLoading, setIsLoading] = useState(false);
+  const [message, setMessage] = useState<{ text: string; type: 'info' | 'warning' } | null>(null);
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -63,11 +64,27 @@ export const SummaryViewer: React.FC = () => {
 
   const handleGenerateWeekly = async () => {
     setIsLoading(true);
+    setMessage(null);
     try {
-      await generateWeeklyNow();
+      const result = await generateWeeklyNow();
       await loadFiles();
+      
+      // Check if the summary has no tasks
+      if (result.plainMarkdown.includes('*No tasks completed during this period.*')) {
+        setMessage({ 
+          text: 'No tasks were completed last week. Summary created anyway.', 
+          type: 'info' 
+        });
+        // Auto-clear message after 5 seconds
+        setTimeout(() => setMessage(null), 5000);
+      }
     } catch (error) {
       console.error('Error generating weekly summary:', error);
+      setMessage({ 
+        text: 'Failed to generate weekly summary. Please try again.', 
+        type: 'warning' 
+      });
+      setTimeout(() => setMessage(null), 5000);
     } finally {
       setIsLoading(false);
     }
@@ -75,11 +92,27 @@ export const SummaryViewer: React.FC = () => {
 
   const handleGenerateMonthly = async () => {
     setIsLoading(true);
+    setMessage(null);
     try {
-      await generateMonthlyNow();
+      const result = await generateMonthlyNow();
       await loadFiles();
+      
+      // Check if the summary has no tasks
+      if (result.plainMarkdown.includes('*No tasks completed during this period.*')) {
+        setMessage({ 
+          text: 'No tasks were completed last month. Summary created anyway.', 
+          type: 'info' 
+        });
+        // Auto-clear message after 5 seconds
+        setTimeout(() => setMessage(null), 5000);
+      }
     } catch (error) {
       console.error('Error generating monthly summary:', error);
+      setMessage({ 
+        text: 'Failed to generate monthly summary. Please try again.', 
+        type: 'warning' 
+      });
+      setTimeout(() => setMessage(null), 5000);
     } finally {
       setIsLoading(false);
     }
@@ -243,6 +276,12 @@ export const SummaryViewer: React.FC = () => {
             Generate Previous Month
           </button>
         </div>
+
+        {message && (
+          <div className={`summary-message ${message.type}`}>
+            {message.text}
+          </div>
+        )}
 
         <div className="summary-controls">
           <div className="search-container">

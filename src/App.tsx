@@ -5,6 +5,7 @@ import { SummaryViewer } from "./features/SummaryViewer";
 import { QuickAddModal } from "./components/QuickAddModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { AboutModal } from "./components/AboutModal";
+import { RecurringTasksModal } from "./components/RecurringTasksModal";
 import { Titlebar } from "./components/Titlebar";
 import { AppMenu } from "./components/AppMenuSimple";
 import { ChevronLeft } from "lucide-react";
@@ -16,6 +17,7 @@ import { setupNotifications } from "./services/notifications";
 import { setupMidnightClear } from "./services/midnightClear";
 import { setupGlobalHotkey, cleanupGlobalHotkey } from "./services/globalHotkey";
 import { setupSummaryScheduler, stopSummaryScheduler } from "./services/summaryScheduler";
+import { generateForDate } from "./services/recurringTaskService";
 import { DateTime } from "luxon";
 import "./styles/App.css";
 
@@ -26,6 +28,7 @@ function App() {
   const [isQuickAddOpen, setIsQuickAddOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isRecurringOpen, setIsRecurringOpen] = useState(false);
   const [currentDate, setCurrentDate] = useState(DateTime.local().toFormat("EEEE, MMMM d, yyyy"));
   const [showHistory, setShowHistory] = useState(false);
   const [showSummaries, setShowSummaries] = useState(false);
@@ -34,16 +37,18 @@ function App() {
     // Initialize app
     const init = async () => {
       await initializeDatabase();
-      // Load settings and tasks after database is initialized
-      await loadSettings();
-      await loadTasks();
-      // Temporarily disable tray menu - will fix later
-      // await setupTrayMenu();
-      await setupNotifications();
-      await setupMidnightClear();
-      await setupSummaryScheduler();
-      await setupGlobalHotkey(() => setIsQuickAddOpen(true));
+      // Apply theme as early as possible
       await initTheme();
+      // Load settings and tasks after database is initialized
+      await Promise.all([
+        (async () => { await loadSettings(); })(),
+        (async () => { await loadTasks(); })(),
+        (async () => { await setupNotifications(); })(),
+        (async () => { await setupMidnightClear(); })(),
+        (async () => { await setupSummaryScheduler(); })(),
+        (async () => { await generateForDate(DateTime.local()); })(),
+        (async () => { await setupGlobalHotkey(() => setIsQuickAddOpen(true)); })(),
+      ]);
     };
     
     init().catch(console.error);
@@ -100,6 +105,7 @@ function App() {
           }}
           onOpenSettings={() => setIsSettingsOpen(true)}
           onOpenAbout={() => setIsAboutOpen(true)}
+          onOpenRecurring={() => setIsRecurringOpen(true)}
         />
       </header>
       
@@ -132,6 +138,11 @@ function App() {
       <AboutModal
         isOpen={isAboutOpen}
         onClose={() => setIsAboutOpen(false)}
+      />
+      
+      <RecurringTasksModal
+        isOpen={isRecurringOpen}
+        onClose={() => setIsRecurringOpen(false)}
       />
     </div>
   );

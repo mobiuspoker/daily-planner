@@ -1,0 +1,543 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.modal-content {
+  background-color: var(--bg-paper);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-lg);
+  box-shadow: none;
+  animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.recurring-modal {
+  max-width: 600px;
+  width: 90%;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-lg);
+  border-bottom: 1px solid var(--line-color);
+}
+
+.modal-header h2 {
+  margin: 0;
+  font-size: 1.25rem;
+  color: var(--text-primary);
+  font-family: var(--font-serif);
+}
+
+.modal-close {
+  width: 2rem;
+  height: 2rem;
+  border-radius: var(--radius-md);
+  background-color: transparent;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.modal-close:hover {
+  background-color: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.modal-body {
+  padding: var(--spacing-lg);
+  overflow-y: auto;
+  flex: 1;
+}
+
+/* Rules List */
+.recurring-rules-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.5rem;
+}
+
+.recurring-rule-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: 1rem;
+  background: var(--bg-paper);
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
+  transition: all 0.2s ease;
+}
+
+.recurring-rule-item:hover {
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.dark .recurring-rule-item:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.recurring-rule-item.disabled {
+  opacity: 0.5;
+}
+
+.rule-main {
+  display: flex;
+  gap: 0.875rem;
+  flex: 1;
+  align-items: flex-start;
+}
+
+/* Custom checkbox styling */
+input[type="checkbox"].rule-checkbox {
+  position: relative;
+  width: 18px !important;
+  height: 18px !important;
+  min-width: 18px;
+  min-height: 18px;
+  max-width: 18px;
+  max-height: 18px;
+  margin: 0;
+  margin-top: 0.125rem;
+  padding: 0;
+  cursor: pointer;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background: var(--bg-paper);
+  border: 1.5px solid var(--line-color);
+  border-radius: var(--radius-sm);
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  flex-grow: 0;
+}
+
+input[type="checkbox"].rule-checkbox:hover {
+  border-color: var(--ink-sage);
+}
+
+input[type="checkbox"].rule-checkbox:focus {
+  outline: none;
+}
+
+input[type="checkbox"].rule-checkbox:checked {
+  background: var(--ink-sage) !important;
+  background-color: var(--ink-sage) !important;
+  border-color: var(--ink-sage);
+}
+
+input[type="checkbox"].rule-checkbox:checked::after {
+  content: '';
+  position: absolute;
+  top: 1px;
+  left: 4px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.rule-info {
+  flex: 1;
+}
+
+.rule-title {
+  font-family: var(--font-serif);
+  font-size: 1.0625rem;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.rule-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-family: var(--font-sans);
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.rule-meta svg {
+  opacity: 0.6;
+}
+
+.rule-notes {
+  margin-top: 0.5rem;
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  color: var(--color-text-secondary);
+  line-height: 1.4;
+}
+
+.rule-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.icon-button {
+  padding: 0.375rem;
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: var(--text-primary);
+  opacity: 0.7;
+}
+
+.icon-button:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.dark .icon-button:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.icon-button.danger {
+  border: none;
+  color: var(--color-text-secondary);
+}
+
+.icon-button.danger:hover {
+  color: var(--color-danger);
+  background: rgba(255, 107, 107, 0.1);
+}
+
+/* Add Button */
+.add-recurring-button {
+  width: 100%;
+  padding: 0.875rem;
+  background: var(--bg-paper);
+  border: 2px dashed var(--line-color);
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.add-recurring-button:hover {
+  border-color: var(--ink-sage);
+  background: rgba(122, 132, 113, 0.05);
+}
+
+/* Form */
+.recurring-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  font-family: var(--font-sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.6;
+}
+
+.form-input,
+.form-textarea {
+  width: 100%;
+  padding: 0.75rem;
+  background: var(--bg-paper);
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text-primary);
+  transition: border-color 0.2s ease;
+}
+
+.form-input:focus,
+.form-textarea:focus {
+  outline: none;
+  border-color: var(--line-color);
+}
+
+.form-textarea {
+  resize: vertical;
+  min-height: 60px;
+}
+
+.time-input-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 200px;
+}
+
+.time-input {
+  flex: 1;
+}
+
+.time-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+}
+
+.dark .time-input::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+}
+
+/* Style the time input when empty to look less harsh */
+.time-input::-webkit-datetime-edit {
+  padding-left: 0.25rem;
+}
+
+.time-input::-webkit-datetime-edit-fields-wrapper {
+  color: var(--text-primary);
+}
+
+.time-input::-webkit-datetime-edit-text {
+  color: var(--color-text-secondary);
+  padding: 0 0.125rem;
+}
+
+.time-input::-webkit-datetime-edit-hour-field,
+.time-input::-webkit-datetime-edit-minute-field,
+.time-input::-webkit-datetime-edit-ampm-field {
+  color: var(--text-primary);
+  padding: 0.125rem;
+}
+
+/* Make empty state less prominent */
+.time-input:invalid::-webkit-datetime-edit-hour-field,
+.time-input:invalid::-webkit-datetime-edit-minute-field,
+.time-input:invalid::-webkit-datetime-edit-ampm-field,
+.time-input[value=""]::-webkit-datetime-edit-hour-field,
+.time-input[value=""]::-webkit-datetime-edit-minute-field,
+.time-input[value=""]::-webkit-datetime-edit-ampm-field {
+  color: var(--color-text-secondary);
+  opacity: 0.5;
+}
+
+.clear-time-button {
+  padding: 0.375rem;
+  background: transparent;
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-secondary);
+  transition: all 0.2s ease;
+}
+
+.clear-time-button:hover {
+  opacity: 0.7;
+  transform: scale(1.05);
+}
+
+/* Cadence Tabs */
+.cadence-tabs {
+  display: flex;
+  gap: var(--spacing-sm);
+}
+
+.cadence-tab {
+  flex: 1;
+  padding: var(--spacing-sm) var(--spacing-md);
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif);
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
+}
+
+.cadence-tab:hover {
+  opacity: 1;
+  background: rgba(0, 0, 0, 0.02);
+}
+
+.dark .cadence-tab:hover {
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.cadence-tab.active {
+  opacity: 1;
+  background: var(--ink-sage);
+  border-color: var(--ink-sage);
+  color: white;
+}
+
+.cadence-tab.active:hover {
+  background: var(--ink-sage);
+  opacity: 0.9;
+}
+
+/* Weekday Selector */
+.weekday-selector {
+  display: flex;
+  gap: 0.375rem;
+}
+
+.weekday-button {
+  flex: 1;
+  padding: 0.5rem 0.25rem;
+  background: var(--bg-paper);
+  border: 1px solid var(--line-color);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-serif);
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.weekday-button.selected {
+  background: var(--ink-sage);
+  border-color: var(--ink-sage);
+  color: white;
+}
+
+.weekday-button:not(.selected):hover {
+  border-color: var(--ink-sage);
+}
+
+/* Checkbox Label */
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  font-family: var(--font-serif);
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.checkbox-label input[type="checkbox"] {
+  cursor: pointer;
+}
+
+/* Form Actions */
+.form-actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: flex-end;
+  margin-top: 0.75rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line-color);
+}
+
+.button-primary,
+.button-secondary {
+  padding: 0.625rem 1.25rem;
+  border-radius: var(--radius-md);
+  font-family: var(--font-serif);
+  font-size: 0.9375rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.button-primary {
+  background: var(--ink-sage);
+  border: none;
+  color: white;
+}
+
+.button-primary:hover:not(:disabled) {
+  opacity: 0.9;
+  transform: scale(1.02);
+}
+
+.button-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.button-secondary {
+  background: transparent;
+  border: 1px solid var(--line-color);
+  color: var(--text-primary);
+}
+
+.button-secondary:hover:not(:disabled) {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.dark .button-secondary:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Empty State */
+.empty-state {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--color-text-secondary);
+}
+
+.empty-state p {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: 1.125rem;
+}
+
+.empty-hint {
+  margin-top: 0.5rem !important;
+  font-size: 0.9375rem !important;
+  opacity: 0.7;
+}

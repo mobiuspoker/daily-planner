@@ -4,6 +4,7 @@ import { writeTextFile, readTextFile } from "@tauri-apps/plugin-fs";
 import { getAllSettings, setSetting } from "./settingsService";
 import { useTaskStore } from "../state/taskStore";
 import { DateTime } from "luxon";
+import { listRules } from "./recurringTaskService";
 
 interface ExportData {
   version: number;
@@ -11,6 +12,7 @@ interface ExportData {
   tasks: any[];
   taskHistory: any[];
   settings: Record<string, any>;
+  recurringRules?: any[];
 }
 
 function normalizeBooleanToInt(value: any): number {
@@ -47,6 +49,9 @@ export async function exportData(): Promise<void> {
     // Get all history
     const taskHistory = await db.select<any[]>("SELECT * FROM task_history ORDER BY cleared_on DESC");
     
+    // Get all recurring rules
+    const recurringRules = await listRules();
+    
     // Get all settings
     const settings = await getAllSettings();
     
@@ -74,6 +79,18 @@ export async function exportData(): Promise<void> {
         completedAt: item.completed_at,
         clearedOn: item.cleared_on,
         createdAt: item.created_at
+      })),
+      recurringRules: recurringRules.map(rule => ({
+        id: rule.id,
+        title: rule.title,
+        notes: rule.notes,
+        cadenceType: rule.cadenceType,
+        weekdaysMask: rule.weekdaysMask,
+        monthlyDay: rule.monthlyDay,
+        timeHHmm: rule.timeHHmm,
+        enabled: rule.enabled,
+        createdAt: rule.createdAt,
+        updatedAt: rule.updatedAt
       })),
       settings
     };
@@ -183,6 +200,37 @@ export async function importData(): Promise<void> {
               task.completedAt,
               task.createdAt,
               task.updatedAt
+            ]
+          );
+        }
+      }
+    }
+    
+    // Import recurring rules (merge strategy)
+    if (data.recurringRules && data.recurringRules.length > 0) {
+      for (const rule of data.recurringRules) {
+        // Check if rule already exists
+        const existing = await db.select(
+          "SELECT id FROM recurring_rules WHERE id = ?",
+          [rule.id]
+        );
+        
+        if ((existing as any[]).length === 0) {
+          const enabled = normalizeBooleanToInt(rule.enabled);
+          await db.execute(
+            `INSERT INTO recurring_rules (id, title, notes, cadence_type, weekdays_mask, monthly_day, time_hhmm, enabled, created_at, updated_at)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+            [
+              rule.id,
+              rule.title,
+              rule.notes,
+              rule.cadenceType,
+              rule.weekdaysMask ?? null,
+              rule.monthlyDay ?? null,
+              rule.timeHHmm || null,
+              enabled,
+              rule.createdAt,
+              rule.updatedAt
             ]
           );
         }

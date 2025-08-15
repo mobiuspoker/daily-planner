@@ -2,6 +2,7 @@ import { DateTime } from "luxon";
 import { getDatabase } from "../db/database";
 import { useTaskStore } from "../state/taskStore";
 import { sendNotification } from "@tauri-apps/plugin-notification";
+import { generateForDate } from "./recurringTaskService";
 
 let midnightTimeout: number | null = null;
 
@@ -111,14 +112,22 @@ async function performMidnightClear() {
       );
     }
     
+    // Generate recurring tasks for the new day
+    const { created: recurringCreated } = await generateForDate(DateTime.local());
+    
     // Reload tasks in the store
     await useTaskStore.getState().loadTasks();
     
     // Send notification
-    if (totalCompleted > 0 || incompleteTasks.length > 0) {
+    let notificationBody = `Archived ${totalCompleted} completed task${totalCompleted === 1 ? '' : 's'} (${completedTodayTasks.length} Today, ${completedFutureTasks.length} Future). ${incompleteTasks.length} task${incompleteTasks.length === 1 ? '' : 's'} carried over.`;
+    if (recurringCreated > 0) {
+      notificationBody += ` Added ${recurringCreated} recurring task${recurringCreated === 1 ? '' : 's'}.`;
+    }
+    
+    if (totalCompleted > 0 || incompleteTasks.length > 0 || recurringCreated > 0) {
       await sendNotification({
         title: "Daily Clear Complete",
-        body: `Archived ${totalCompleted} completed task${totalCompleted === 1 ? '' : 's'} (${completedTodayTasks.length} Today, ${completedFutureTasks.length} Future). ${incompleteTasks.length} task${incompleteTasks.length === 1 ? '' : 's'} carried over.`,
+        body: notificationBody,
       });
     }
     

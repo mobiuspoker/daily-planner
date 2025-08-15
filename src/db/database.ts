@@ -62,6 +62,28 @@ async function runMigrations(): Promise<void> {
       value TEXT NOT NULL
     )
   `);
+
+  // Create recurring rules table
+  await db.execute(`
+    CREATE TABLE IF NOT EXISTS recurring_rules (
+      id TEXT PRIMARY KEY,
+      title TEXT NOT NULL,
+      notes TEXT,
+      cadence_type TEXT NOT NULL CHECK (cadence_type IN ('WEEKLY','MONTHLY')),
+      weekdays_mask INTEGER,
+      monthly_day INTEGER,
+      time_hhmm TEXT,
+      enabled INTEGER NOT NULL DEFAULT 1,
+      created_at TEXT NOT NULL,
+      updated_at TEXT NOT NULL
+    )
+  `);
+
+  // Create index for recurring rules queries
+  await db.execute(`
+    CREATE INDEX IF NOT EXISTS idx_recurring_enabled_cadence 
+    ON recurring_rules(enabled, cadence_type)
+  `);
 }
 
 export function getDatabase(): Database {

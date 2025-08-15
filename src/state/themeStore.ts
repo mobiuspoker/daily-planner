@@ -43,6 +43,11 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       
       set({ theme });
       document.documentElement.setAttribute("data-theme", theme);
+      if (savedMode === "auto") {
+        try { localStorage.removeItem("themeMode"); } catch {}
+      } else {
+        try { localStorage.setItem("themeMode", theme); } catch {}
+      }
     } catch (error) {
       console.error("Failed to initialize theme:", error);
       // Fallback to system preference
@@ -50,6 +55,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
       const theme = prefersDark ? "dark" : "light";
       set({ theme, themeMode: "auto" });
       document.documentElement.setAttribute("data-theme", theme);
+      try { localStorage.removeItem("themeMode"); } catch {}
     }
   },
   
@@ -60,6 +66,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     
     set({ theme: newTheme, themeMode: newMode });
     document.documentElement.setAttribute("data-theme", newTheme);
+    try { localStorage.setItem("themeMode", newTheme); } catch {}
     
     try {
       await setSetting("themeMode", newMode);
@@ -86,6 +93,13 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     
     set({ theme });
     document.documentElement.setAttribute("data-theme", theme);
+    try {
+      if (mode === "auto") {
+        localStorage.removeItem("themeMode");
+      } else {
+        localStorage.setItem("themeMode", theme);
+      }
+    } catch {}
     
     try {
       await setSetting("themeMode", mode);

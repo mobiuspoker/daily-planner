@@ -7,7 +7,8 @@ import {
   Settings, 
   HelpCircle,
   FolderOpen,
-  FileText
+  FileText,
+  Repeat
 } from "lucide-react";
 import { open } from "@tauri-apps/plugin-shell";
 import { mkdir } from "@tauri-apps/plugin-fs";
@@ -21,9 +22,10 @@ interface AppMenuProps {
   onOpenSummaries: () => void;
   onOpenSettings: () => void;
   onOpenAbout: () => void;
+  onOpenRecurring: () => void;
 }
 
-export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpenAbout }: AppMenuProps) {
+export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpenAbout, onOpenRecurring }: AppMenuProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const { getSetting } = useSettingsStore();
@@ -117,7 +119,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
 
       {isOpen && (
         <div className="menu-dropdown" onKeyDown={handleKeyDown}>
-          {/* View Section */}
+          {/* Core Features */}
           <div className="menu-section">
             <button 
               className="menu-item"
@@ -139,11 +141,37 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
               <FileText size={16} />
               <span>Summaries</span>
             </button>
+            <button 
+              className="menu-item"
+              onClick={() => {
+                onOpenRecurring();
+                setIsOpen(false);
+              }}
+            >
+              <Repeat size={16} />
+              <span>Recurring Tasks</span>
+            </button>
           </div>
 
           <div className="menu-divider" />
 
-          {/* Data Section */}
+          {/* Settings */}
+          <div className="menu-section">
+            <button 
+              className="menu-item"
+              onClick={() => {
+                onOpenSettings();
+                setIsOpen(false);
+              }}
+            >
+              <Settings size={16} />
+              <span>Settings</span>
+            </button>
+          </div>
+
+          <div className="menu-divider" />
+
+          {/* Data Management */}
           <div className="menu-section">
             <button className="menu-item" onClick={handleExport}>
               <Download size={16} />
@@ -165,23 +193,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
 
           <div className="menu-divider" />
 
-          {/* Settings & Tools Section */}
-          <div className="menu-section">
-            <button 
-              className="menu-item"
-              onClick={() => {
-                onOpenSettings();
-                setIsOpen(false);
-              }}
-            >
-              <Settings size={16} />
-              <span>Settings</span>
-            </button>
-          </div>
-
-          <div className="menu-divider" />
-
-          {/* Help Section */}
+          {/* Help */}
           <div className="menu-section">
             <button 
               className="menu-item"
