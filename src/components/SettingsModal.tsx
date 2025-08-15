@@ -220,30 +220,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
           </div>
 
-          {/* Quick Add Section */}
-          <div className="settings-section">
-            <h3>Quick Add</h3>
-            <div className="setting-item">
-              <label htmlFor="global-hotkey">
-                <Keyboard size={16} />
-                Global Hotkey
-              </label>
-              <input
-                id="global-hotkey"
-                type="text"
-                value={globalHotkey}
-                onChange={(e) => setGlobalHotkey(e.target.value)}
-                onBlur={(e) => handleGlobalHotkeyChange(e.target.value)}
-                placeholder="e.g., Ctrl+Shift+A"
-                className="hotkey-input"
-                spellCheck={false}
-              />
-            </div>
-            <div className="setting-description">
-              <p>Press this key combination from anywhere to quickly add a task.</p>
-            </div>
-          </div>
-
           {/* Notifications Section */}
           <div className="settings-section">
             <h3>Notifications</h3>
@@ -287,6 +263,30 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               />
             </div>
             
+          </div>
+
+          {/* Quick Add Section */}
+          <div className="settings-section">
+            <h3>Quick Add</h3>
+            <div className="setting-item">
+              <label htmlFor="global-hotkey">
+                <Keyboard size={16} />
+                Global Hotkey
+              </label>
+              <input
+                id="global-hotkey"
+                type="text"
+                value={globalHotkey}
+                onChange={(e) => setGlobalHotkey(e.target.value)}
+                onBlur={(e) => handleGlobalHotkeyChange(e.target.value)}
+                placeholder="e.g., Ctrl+Shift+A"
+                className="hotkey-input"
+                spellCheck={false}
+              />
+            </div>
+            <div className="setting-description">
+              <p>Press this key combination from anywhere to quickly add a task.</p>
+            </div>
           </div>
 
           {/* Summaries Section */}
