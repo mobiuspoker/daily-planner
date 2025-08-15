@@ -6,6 +6,7 @@ import { QuickAddModal } from "./components/QuickAddModal";
 import { SettingsModal } from "./components/SettingsModal";
 import { AboutModal } from "./components/AboutModal";
 import { RecurringTasksModal } from "./components/RecurringTasksModal";
+import { Greeting } from "./components/Greeting";
 import { Titlebar } from "./components/Titlebar";
 import { AppMenu } from "./components/AppMenuSimple";
 import { ChevronLeft } from "lucide-react";
@@ -32,6 +33,7 @@ function App() {
   const [currentDate, setCurrentDate] = useState(DateTime.local().toFormat("EEEE, MMMM d, yyyy"));
   const [showHistory, setShowHistory] = useState(false);
   const [showSummaries, setShowSummaries] = useState(false);
+  const [showGreeting, setShowGreeting] = useState(true);
 
   useEffect(() => {
     // Initialize app
@@ -39,6 +41,7 @@ function App() {
       await initializeDatabase();
       // Apply theme as early as possible
       await initTheme();
+      
       // Load settings and tasks after database is initialized
       await Promise.all([
         (async () => { await loadSettings(); })(),
@@ -68,9 +71,11 @@ function App() {
 
 
   return (
-    <div className={`app ${theme}`}>
-      <Titlebar />
-      <header className="app-header">
+    <>
+      {showGreeting && <Greeting onComplete={() => setShowGreeting(false)} />}
+      <div className={`app ${theme}`} style={{ opacity: showGreeting ? 0 : 1, transition: 'opacity 0.3s ease-in-out' }}>
+        <Titlebar />
+        <header className="app-header">
         {showHistory ? (
           <h1>
             <button className="inline-back-button" onClick={() => {
@@ -144,7 +149,8 @@ function App() {
         isOpen={isRecurringOpen}
         onClose={() => setIsRecurringOpen(false)}
       />
-    </div>
+      </div>
+    </>
   );
 }
 
