@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Clock, Bell, Moon, Sun, Monitor, Calendar, FolderOpen, Key, Keyboard, User } from "lucide-react";
+import { X, Moon, Sun, Monitor } from "lucide-react";
 import { useThemeStore } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { CustomDropdown } from "./CustomDropdown";
@@ -172,10 +172,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="settings-section">
             <h3>Personalization</h3>
             <div className="setting-item">
-              <label htmlFor="user-name">
-                <User size={16} />
-                Name
-              </label>
+              <label htmlFor="user-name">Name</label>
               <input
                 id="user-name"
                 type="text"
@@ -224,10 +221,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="settings-section">
             <h3>Notifications</h3>
             <div className="setting-item">
-              <label htmlFor="reminder-lead">
-                <Clock size={16} />
-                Reminder Lead Time
-              </label>
+              <label htmlFor="reminder-lead">Reminder Lead Time</label>
               <CustomDropdown
                 id="reminder-lead"
                 value={reminderLead}
@@ -244,10 +238,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
 
             <div className="setting-item">
-              <label htmlFor="overdue-window">
-                <Bell size={16} />
-                Overdue Alert Window
-              </label>
+              <label htmlFor="overdue-window">Overdue Alert Window</label>
               <CustomDropdown
                 id="overdue-window"
                 value={overdueWindow}
@@ -269,10 +260,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="settings-section">
             <h3>Quick Add</h3>
             <div className="setting-item">
-              <label htmlFor="global-hotkey">
-                <Keyboard size={16} />
-                Global Hotkey
-              </label>
+              <label htmlFor="global-hotkey">Global Hotkey</label>
               <input
                 id="global-hotkey"
                 type="text"
@@ -293,10 +281,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="settings-section">
             <h3>Summaries</h3>
             <div className="setting-item">
-              <label>
-                <Calendar size={16} />
-                Weekly Summary
-              </label>
+              <label>Weekly Summary</label>
               <label className="toggle-switch">
                 <input
                   type="checkbox"
@@ -308,10 +293,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
 
             <div className="setting-item">
-              <label>
-                <Calendar size={16} />
-                Monthly Summary
-              </label>
+              <label>Monthly Summary</label>
               <label className="toggle-switch">
                 <input
                   type="checkbox"
@@ -326,10 +308,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
               <>
                 {summaryWeeklyEnabled && (
                   <div className="setting-item">
-                    <label htmlFor="weekly-day">
-                      <Calendar size={16} />
-                      Weekly Day
-                    </label>
+                    <label htmlFor="weekly-day">Weekly Day</label>
                     <CustomDropdown
                       id="weekly-day"
                       value={summaryWeeklyDay}
@@ -349,10 +328,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
                 {summaryMonthlyEnabled && (
                   <div className="setting-item">
-                    <label htmlFor="monthly-day">
-                      <Calendar size={16} />
-                      Monthly Day
-                    </label>
+                    <label htmlFor="monthly-day">Monthly Day</label>
                     <CustomDropdown
                       id="monthly-day"
                       value={summaryMonthlyDay}
@@ -375,10 +351,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
                 )}
 
                 <div className="setting-item">
-                  <label htmlFor="summary-time">
-                    <Clock size={16} />
-                    Summary Time
-                  </label>
+                  <label htmlFor="summary-time">Summary Time</label>
                   <CustomDropdown
                     id="summary-time"
                     value={summaryTime}
@@ -399,10 +372,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             )}
 
             <div className="setting-item">
-              <label>
-                <FolderOpen size={16} />
-                Destination Folder
-              </label>
+              <label>Destination Folder</label>
               <button className="folder-button" onClick={handleChooseFolder}>
                 {summaryFolder || "Default (App Data)"}
               </button>
@@ -413,9 +383,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
           <div className="settings-section">
             <h3>AI Summaries</h3>
             <div className="setting-item">
-              <label htmlFor="ai-provider">
-                AI Provider
-              </label>
+              <label htmlFor="ai-provider">AI Provider</label>
               <CustomDropdown
                 id="ai-provider"
                 value={aiProvider}
@@ -430,10 +398,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
             {aiProvider !== "none" && (
               <div className="setting-item">
-                <label htmlFor="ai-api-key">
-                  <Key size={16} />
-                  API Key
-                </label>
+                <label htmlFor="ai-api-key">API Key</label>
                 <div className="api-key-input">
                   <input
                     id="ai-api-key"
