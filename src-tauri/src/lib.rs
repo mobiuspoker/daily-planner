@@ -28,10 +28,19 @@ pub fn run() {
                 // On Windows, keep custom titlebar
                 window.set_decorations(false).unwrap();
             }
-            
             Ok(())
         })
-        .invoke_handler(tauri::generate_handler![])
+        .invoke_handler(tauri::generate_handler![frontend_ready])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
+}
+
+#[tauri::command]
+async fn frontend_ready(app: tauri::AppHandle) {
+    use tauri::Manager;
+    // No splash: just show the main window when ready
+    if let Some(main) = app.get_webview_window("main") {
+        let _ = main.show();
+        let _ = main.set_focus();
+    }
 }

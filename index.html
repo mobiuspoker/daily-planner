@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fcfcfb" />
+    <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#181818" />
     <title>Daily Planner</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -51,6 +53,9 @@
             theme = prefersDark ? 'dark' : 'light';
           }
           document.documentElement.setAttribute('data-theme', theme);
+          // Set immediate background to avoid white flash even before CSS loads
+          var bg = theme === 'dark' ? getComputedStyle(document.documentElement).getPropertyValue('--initial-bg-dark') : getComputedStyle(document.documentElement).getPropertyValue('--initial-bg-light');
+          document.documentElement.style.backgroundColor = bg || (theme === 'dark' ? '#181818' : '#fcfcfb');
         } catch (e) {
           // ignore
         }

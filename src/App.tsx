@@ -20,10 +20,10 @@ import { setupGlobalHotkey, cleanupGlobalHotkey } from "./services/globalHotkey"
 import { setupSummaryScheduler, stopSummaryScheduler } from "./services/summaryScheduler";
 import { generateForDate } from "./services/recurringTaskService";
 import { DateTime } from "luxon";
-import { getCurrentWindow } from "@tauri-apps/api/window";
+import { invoke } from "@tauri-apps/api/core";
 import "./styles/App.css";
 
-// Note: Window visibility is controlled after theme init in the effect below
+// Note: Window visibility is controlled by the backend after 'frontend-ready'
 
 function App() {
   const { theme, initTheme } = useThemeStore();
@@ -44,14 +44,11 @@ function App() {
       await initializeDatabase();
       // Apply theme as early as possible
       await initTheme();
-
-      // After theme is applied, show the window to avoid white flash
+      
+      // Notify backend we're ready to show the main window (after one frame)
       if (typeof window !== 'undefined' && (window as any).__TAURI__) {
-        try {
-          // Ensure we show on the next frame after CSS applies
-          await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-          await getCurrentWindow().show();
-        } catch {}
+        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
+        try { await invoke('frontend_ready'); } catch {}
       }
       
       // Load settings and tasks after database is initialized
