@@ -1,5 +1,4 @@
 import { create } from "zustand";
-import { getSetting, setSetting } from "../services/settingsService";
 
 type Theme = "light" | "dark";
 type ThemeMode = "auto" | "light" | "dark";
@@ -46,18 +45,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     };
     try { prefersDarkMql.addEventListener("change", onSystemThemeChange); } catch {}
 
-    // Reconcile with persisted setting asynchronously (may require DB)
-    try {
-      const savedMode = await getSetting<ThemeMode>("themeMode");
-      // Only enforce a persisted explicit choice; ignore implicit default 'auto'
-      if (savedMode === "light" || savedMode === "dark") {
-        if (savedMode !== bootMode) {
-          await get().setThemeMode(savedMode);
-        }
-      }
-    } catch (error) {
-      console.error("Failed to reconcile theme from settings:", error);
-    }
+    // No DB reconciliation; localStorage is the source of truth at startup
   },
   
   toggleTheme: async () => {
@@ -69,11 +57,7 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     document.documentElement.setAttribute("data-theme", newTheme);
     try { localStorage.setItem("themeMode", newTheme); } catch {}
     
-    try {
-      await setSetting("themeMode", newMode);
-    } catch (error) {
-      console.error("Failed to save theme:", error);
-    }
+    // Do not persist to DB; localStorage is sufficient and faster
   },
   
   setTheme: (theme) => {
@@ -94,20 +78,8 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     
     set({ theme });
     document.documentElement.setAttribute("data-theme", theme);
-    try {
-      if (mode === "auto") {
-        // Persist explicit auto so we can restore on next run without DB
-        localStorage.setItem("themeMode", "auto");
-      } else {
-        localStorage.setItem("themeMode", theme);
-      }
-    } catch {}
-    
-    try {
-      await setSetting("themeMode", mode);
-    } catch (error) {
-      console.error("Failed to save theme mode:", error);
-    }
+    try { localStorage.setItem("themeMode", mode); } catch {}
+    // Do not persist to DB; avoid async I/O at boot and race conditions
   }
 }));
 

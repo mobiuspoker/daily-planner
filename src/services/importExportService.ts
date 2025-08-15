@@ -52,8 +52,14 @@ export async function exportData(): Promise<void> {
     // Get all recurring rules
     const recurringRules = await listRules();
     
-    // Get all settings
+    // Get all settings (but override themeMode with localStorage copy if present to reflect real startup source)
     const settings = await getAllSettings();
+    try {
+      const lsTheme = localStorage.getItem("themeMode");
+      if (lsTheme === "light" || lsTheme === "dark" || lsTheme === "auto") {
+        (settings as any).themeMode = lsTheme;
+      }
+    } catch {}
     
     // Create export object
     const exportData: ExportData = {
@@ -141,6 +147,10 @@ export async function importData(): Promise<void> {
     // Import settings
     if (data.settings) {
       for (const [key, value] of Object.entries(data.settings)) {
+        if (key === "themeMode") {
+          try { localStorage.setItem("themeMode", String(value)); } catch {}
+          continue; // do not store theme in DB
+        }
         await setSetting(key as any, value);
       }
     }

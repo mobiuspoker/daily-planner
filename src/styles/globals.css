@@ -82,6 +82,10 @@ html {
   font-size: 16px;
 }
 
+html {
+  background: transparent;
+}
+
 body {
   font-family: var(--font-sans);
   background-color: var(--color-bg);

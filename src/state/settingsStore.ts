@@ -32,14 +32,19 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
   
   updateSetting: async (key: string, value: any) => {
     try {
+      // Handle theme in-memory only; skip DB persistence
+      if (key === "themeMode" || key === "theme") {
+        const settings = { ...get().settings, [key]: value };
+        set({ settings });
+        applyThemeMode(value);
+        try { localStorage.setItem("themeMode", value); } catch {}
+        return;
+      }
+
+      // Persist other settings to DB
       await setSetting(key as any, value);
       const settings = { ...get().settings, [key]: value };
       set({ settings });
-      
-      // If theme-related setting changed, update theme store
-      if (key === "themeMode" || key === "theme") {
-        applyThemeMode(value);
-      }
     } catch (error) {
       set({ 
         error: error instanceof Error ? error.message : "Failed to update setting"

@@ -19,43 +19,32 @@
         --initial-text-dark: #e9ecef;
       }
       
-      html {
-        background-color: var(--initial-bg-light);
-        color: var(--initial-text-light);
-      }
-      
-      html[data-theme="dark"] {
-        background-color: var(--initial-bg-dark);
-        color: var(--initial-text-dark);
-      }
-      
+      html, #root { background: transparent !important; }
       body {
         margin: 0;
-        background-color: inherit;
-        color: inherit;
+        color: var(--initial-text-light);
         min-height: 100vh;
       }
       
-      #root {
-        min-height: 100vh;
-        background-color: inherit;
-      }
+      html[data-theme="light"] body { background-color: var(--initial-bg-light); color: var(--initial-text-light); }
+      html[data-theme="dark"] body { background-color: var(--initial-bg-dark); color: var(--initial-text-dark); }
     </style>
     <script>
       (function() {
         try {
           var storedMode = localStorage.getItem('themeMode');
+          var themeMode = (storedMode === 'light' || storedMode === 'dark' || storedMode === 'auto') ? storedMode : 'auto';
           var theme;
-          if (storedMode === 'light' || storedMode === 'dark') {
-            theme = storedMode;
+          if (themeMode === 'light' || themeMode === 'dark') {
+            theme = themeMode;
           } else {
             var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             theme = prefersDark ? 'dark' : 'light';
           }
           document.documentElement.setAttribute('data-theme', theme);
-          // Set immediate background to avoid white flash even before CSS loads
-          var bg = theme === 'dark' ? getComputedStyle(document.documentElement).getPropertyValue('--initial-bg-dark') : getComputedStyle(document.documentElement).getPropertyValue('--initial-bg-light');
-          document.documentElement.style.backgroundColor = bg || (theme === 'dark' ? '#181818' : '#fcfcfb');
+          // Paint body early to chosen theme color; html/root remain transparent
+          var bg = theme === 'dark' ? '#181818' : '#fcfcfb';
+          document.body.style.backgroundColor = bg;
         } catch (e) {
           // ignore
         }

@@ -6,7 +6,7 @@
   bottom: 0;
   display: flex;
   flex-direction: column;
-  background-color: var(--color-bg);
+  background-color: transparent;
   overflow-y: auto;
 }
 

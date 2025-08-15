@@ -71,6 +71,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
 
   const handleThemeChange = async (mode: "auto" | "light" | "dark") => {
     await setThemeMode(mode);
+    try { localStorage.setItem("themeMode", mode); } catch {}
   };
 
   const handleSummaryWeeklyChange = async (enabled: boolean) => {

@@ -10,7 +10,7 @@ import { Greeting } from "./components/Greeting";
 import { Titlebar } from "./components/Titlebar";
 import { AppMenu } from "./components/AppMenuSimple";
 import { ChevronLeft } from "lucide-react";
-import { useThemeStore, applyThemeMode } from "./state/themeStore";
+import { useThemeStore } from "./state/themeStore";
 import { useTaskStore } from "./state/taskStore";
 import { useSettingsStore } from "./state/settingsStore";
 import { initializeDatabase } from "./db/database";
@@ -41,26 +41,18 @@ function App() {
   useEffect(() => {
     // Initialize app
     const init = async () => {
-      // Apply theme ASAP without waiting on DB
+      // Apply theme ASAP (from localStorage or system) to avoid flash while hidden
       await initTheme();
 
-      // Tell backend to show window on next frame to avoid flash
+      // Initialize DB and load settings before showing the window, so we can honor persisted theme on first run in prod
+      await initializeDatabase();
+      await loadSettings();
+
+      // Now that theme is final, show the window on the next frame
       if (typeof window !== 'undefined' && (window as any).__TAURI__) {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
         try { await invoke('frontend_ready'); } catch {}
       }
-
-      // Initialize DB first
-      await initializeDatabase();
-
-      // Load settings and reconcile theme preference from DB (in case localStorage was cleared)
-      await loadSettings();
-      try {
-        const savedMode = useSettingsStore.getState().getSetting<"auto" | "light" | "dark">("themeMode");
-        if (savedMode) {
-          applyThemeMode(savedMode);
-        }
-      } catch {}
 
       // Continue initializing the rest in parallel
       await Promise.all([

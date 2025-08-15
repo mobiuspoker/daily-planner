@@ -93,6 +93,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onRunMidnightClear }: 
 
   const handleThemeChange = async (mode: "auto" | "light" | "dark") => {
     await setThemeMode(mode);
+    try { localStorage.setItem("themeMode", mode); } catch {}
     setIsOpen(false);
   };
 
