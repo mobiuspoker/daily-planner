@@ -7,6 +7,37 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,400;7..72,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+      /* Critical CSS to prevent flash of white */
+      :root {
+        --initial-bg-light: #fcfcfb;
+        --initial-bg-dark: #181818;
+        --initial-text-light: #212529;
+        --initial-text-dark: #e9ecef;
+      }
+      
+      html {
+        background-color: var(--initial-bg-light);
+        color: var(--initial-text-light);
+      }
+      
+      html[data-theme="dark"] {
+        background-color: var(--initial-bg-dark);
+        color: var(--initial-text-dark);
+      }
+      
+      body {
+        margin: 0;
+        background-color: inherit;
+        color: inherit;
+        min-height: 100vh;
+      }
+      
+      #root {
+        min-height: 100vh;
+        background-color: inherit;
+      }
+    </style>
     <script>
       (function() {
         try {
