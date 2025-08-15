@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { X, Clock, Bell, Moon, Sun, Monitor, Calendar, FolderOpen, Key, Keyboard } from "lucide-react";
+import { X, Clock, Bell, Moon, Sun, Monitor, Calendar, FolderOpen, Key, Keyboard, User } from "lucide-react";
 import { useThemeStore } from "../state/themeStore";
 import { useSettingsStore } from "../state/settingsStore";
 import { CustomDropdown } from "./CustomDropdown";
@@ -27,6 +27,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
   const [aiApiKey, setAiApiKey] = useState("");
   const [showApiKey, setShowApiKey] = useState(false);
   const [globalHotkey, setGlobalHotkey] = useState("Ctrl+Shift+A");
+  const [userName, setUserName] = useState("");
 
   useEffect(() => {
     if (isOpen) {
@@ -41,6 +42,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       const provider = getSetting<string>("aiProvider") || "none";
       const key = getSetting<string>("aiApiKey") || "";
       const hotkey = getSetting<string>("globalHotkey") || "Ctrl+Shift+A";
+      const name = getSetting<string>("userName") || "";
       
       setReminderLead(lead);
       setOverdueWindow(overdue);
@@ -53,6 +55,7 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
       setAiProvider(provider);
       setAiApiKey(key);
       setGlobalHotkey(hotkey);
+      setUserName(name);
     }
   }, [isOpen, getSetting]);
 
@@ -145,6 +148,12 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
     }
   };
 
+  const handleUserNameChange = async (name: string) => {
+    const trimmed = name.trim();
+    setUserName(trimmed);
+    await updateSetting("userName", trimmed);
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -158,6 +167,27 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
         </div>
 
         <div className="settings-content">
+          {/* Personalization Section */}
+          <div className="settings-section">
+            <h3>Personalization</h3>
+            <div className="setting-item">
+              <label htmlFor="user-name">
+                <User size={16} />
+                Name
+              </label>
+              <input
+                id="user-name"
+                type="text"
+                value={userName}
+                onChange={(e) => setUserName(e.target.value)}
+                onBlur={(e) => handleUserNameChange(e.target.value)}
+                placeholder="Enter your name"
+                className="text-input"
+                spellCheck={false}
+              />
+            </div>
+          </div>
+
           {/* Theme Section */}
           <div className="settings-section">
             <h3>Appearance</h3>
@@ -210,7 +240,6 @@ export function SettingsModal({ isOpen, onClose }: SettingsModalProps) {
             </div>
             <div className="setting-description">
               <p>Press this key combination from anywhere to quickly add a task.</p>
-              <p>Format: Ctrl+Shift+Letter, Alt+Letter, F1-F12, etc.</p>
             </div>
           </div>
 
