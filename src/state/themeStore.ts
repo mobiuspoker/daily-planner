@@ -18,44 +18,45 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
   themeMode: "auto",
   
   initTheme: async () => {
+    // Fast bootstrap: use localStorage or system preference without waiting on DB
+    let bootMode: ThemeMode = "auto";
     try {
-      // Get saved theme mode from settings
-      const savedMode = await getSetting<ThemeMode>("themeMode") || "auto";
-      set({ themeMode: savedMode });
-      
-      let theme: Theme;
-      if (savedMode === "auto") {
-        // Check system preference
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        theme = prefersDark ? "dark" : "light";
-        
-        // Listen for system theme changes
-        window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (e) => {
-          if (get().themeMode === "auto") {
-            const newTheme = e.matches ? "dark" : "light";
-            set({ theme: newTheme });
-            document.documentElement.setAttribute("data-theme", newTheme);
-          }
-        });
-      } else {
-        theme = savedMode as Theme;
+      const stored = localStorage.getItem("themeMode");
+      if (stored === "light" || stored === "dark") {
+        bootMode = stored;
       }
-      
-      set({ theme });
-      document.documentElement.setAttribute("data-theme", theme);
-      if (savedMode === "auto") {
-        try { localStorage.removeItem("themeMode"); } catch {}
-      } else {
-        try { localStorage.setItem("themeMode", theme); } catch {}
+    } catch {}
+
+    set({ themeMode: bootMode });
+
+    const prefersDarkMql = window.matchMedia("(prefers-color-scheme: dark)");
+    const prefersDark = prefersDarkMql.matches;
+    const bootTheme: Theme = bootMode === "auto" ? (prefersDark ? "dark" : "light") : (bootMode as Theme);
+
+    set({ theme: bootTheme });
+    document.documentElement.setAttribute("data-theme", bootTheme);
+
+    // Listen for system theme changes while in auto mode
+    const onSystemThemeChange = (e: MediaQueryListEvent) => {
+      if (get().themeMode === "auto") {
+        const newTheme = e.matches ? "dark" : "light";
+        set({ theme: newTheme });
+        document.documentElement.setAttribute("data-theme", newTheme);
+      }
+    };
+    try { prefersDarkMql.addEventListener("change", onSystemThemeChange); } catch {}
+
+    // Reconcile with persisted setting asynchronously (may require DB)
+    try {
+      const savedMode = await getSetting<ThemeMode>("themeMode");
+      // Only enforce a persisted explicit choice; ignore implicit default 'auto'
+      if (savedMode === "light" || savedMode === "dark") {
+        if (savedMode !== bootMode) {
+          await get().setThemeMode(savedMode);
+        }
       }
     } catch (error) {
-      console.error("Failed to initialize theme:", error);
-      // Fallback to system preference
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const theme = prefersDark ? "dark" : "light";
-      set({ theme, themeMode: "auto" });
-      document.documentElement.setAttribute("data-theme", theme);
-      try { localStorage.removeItem("themeMode"); } catch {}
+      console.error("Failed to reconcile theme from settings:", error);
     }
   },
   
@@ -95,7 +96,8 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     document.documentElement.setAttribute("data-theme", theme);
     try {
       if (mode === "auto") {
-        localStorage.removeItem("themeMode");
+        // Persist explicit auto so we can restore on next run without DB
+        localStorage.setItem("themeMode", "auto");
       } else {
         localStorage.setItem("themeMode", theme);
       }

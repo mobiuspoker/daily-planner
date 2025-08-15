@@ -28,7 +28,7 @@
         "minimizable": true,
         "resizable": true,
         "visible": false,
-        "backgroundColor": "#000000"
+        "backgroundColor": "#181818"
       }
     ],
     "security": {

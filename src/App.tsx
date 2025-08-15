@@ -10,7 +10,7 @@ import { Greeting } from "./components/Greeting";
 import { Titlebar } from "./components/Titlebar";
 import { AppMenu } from "./components/AppMenuSimple";
 import { ChevronLeft } from "lucide-react";
-import { useThemeStore } from "./state/themeStore";
+import { useThemeStore, applyThemeMode } from "./state/themeStore";
 import { useTaskStore } from "./state/taskStore";
 import { useSettingsStore } from "./state/settingsStore";
 import { initializeDatabase } from "./db/database";
@@ -41,19 +41,29 @@ function App() {
   useEffect(() => {
     // Initialize app
     const init = async () => {
-      await initializeDatabase();
-      // Apply theme as early as possible
+      // Apply theme ASAP without waiting on DB
       await initTheme();
-      
-      // Notify backend we're ready to show the main window (after one frame)
+
+      // Tell backend to show window on next frame to avoid flash
       if (typeof window !== 'undefined' && (window as any).__TAURI__) {
         await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
         try { await invoke('frontend_ready'); } catch {}
       }
-      
-      // Load settings and tasks after database is initialized
+
+      // Initialize DB first
+      await initializeDatabase();
+
+      // Load settings and reconcile theme preference from DB (in case localStorage was cleared)
+      await loadSettings();
+      try {
+        const savedMode = useSettingsStore.getState().getSetting<"auto" | "light" | "dark">("themeMode");
+        if (savedMode) {
+          applyThemeMode(savedMode);
+        }
+      } catch {}
+
+      // Continue initializing the rest in parallel
       await Promise.all([
-        (async () => { await loadSettings(); })(),
         (async () => { await loadTasks(); })(),
         (async () => { await setupNotifications(); })(),
         (async () => { await setupMidnightClear(); })(),

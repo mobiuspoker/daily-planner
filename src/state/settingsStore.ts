@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { getAllSettings, setSetting } from "../services/settingsService";
+import { applyThemeMode } from "./themeStore";
 
 interface SettingsStore {
   settings: Record<string, any>;
@@ -37,7 +38,6 @@ export const useSettingsStore = create<SettingsStore>((set, get) => ({
       
       // If theme-related setting changed, update theme store
       if (key === "themeMode" || key === "theme") {
-        const { applyThemeMode } = await import("./themeStore");
         applyThemeMode(value);
       }
     } catch (error) {
