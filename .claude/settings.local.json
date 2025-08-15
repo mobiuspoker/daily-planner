@@ -14,7 +14,8 @@
       "Bash(gh api:*)",
       "Bash(gh release download:*)",
       "Bash(gh run list:*)",
-      "Bash(gh run watch:*)"
+      "Bash(gh run watch:*)",
+      "WebSearch"
     ],
     "deny": []
   }

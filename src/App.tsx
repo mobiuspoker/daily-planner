@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UnifiedTaskList } from "./features/UnifiedTaskList";
 import { HistoryViewer } from "./features/HistoryViewer";
 import { SummaryViewer } from "./features/SummaryViewer";
@@ -37,48 +37,83 @@ function App() {
   const [showHistory, setShowHistory] = useState(false);
   const [showSummaries, setShowSummaries] = useState(false);
   const [showGreeting, setShowGreeting] = useState(true);
+  const initialized = useRef(false);
 
   useEffect(() => {
-    // Initialize app
+    // Prevent double initialization in React StrictMode
+    if (initialized.current) return;
+    let mounted = true;
+    let dateInterval: ReturnType<typeof setInterval> | null = null;
+    
+    // Initialize app with proper error handling and sequencing
     const init = async () => {
-      // Apply theme ASAP (from localStorage or system) to avoid flash while hidden
-      await initTheme();
+      try {
+        // Stage 1: Critical initialization (theme, database, settings)
+        await initTheme();
+        await initializeDatabase();
+        await loadSettings();
 
-      // Initialize DB and load settings before showing the window, so we can honor persisted theme on first run in prod
-      await initializeDatabase();
-      await loadSettings();
+        // Stage 2: Load tasks before showing window
+        await loadTasks();
+        
+        // Stage 3: Ensure DOM is fully painted before showing window
+        if (typeof window !== 'undefined' && (window as any).__TAURI__) {
+          // Wait for multiple frames to ensure everything is painted
+          await new Promise(resolve => setTimeout(resolve, 50));
+          await new Promise(resolve => requestAnimationFrame(() => {
+            requestAnimationFrame(resolve);
+          }));
+          try {
+            await invoke('frontend_ready');
+          } catch (error) {
+            console.warn('Failed to notify backend of frontend ready state:', error);
+          }
+        }
 
-      // Now that theme is final, show the window on the next frame
-      if (typeof window !== 'undefined' && (window as any).__TAURI__) {
-        await new Promise((resolve) => requestAnimationFrame(() => resolve(null)));
-        try { await invoke('frontend_ready'); } catch {}
+        // Stage 4: Initialize background services (use allSettled for resilience)
+        const services = await Promise.allSettled([
+          setupNotifications(),
+          setupMidnightClear(),
+          setupSummaryScheduler(),
+          generateForDate(DateTime.local()),
+          setupGlobalHotkey(() => mounted && setIsQuickAddOpen(true)),
+        ]);
+        
+        // Log any service initialization failures
+        services.forEach((result, index) => {
+          if (result.status === 'rejected') {
+            const serviceName = ['notifications', 'midnight clear', 'summary scheduler', 'recurring tasks', 'global hotkey'][index];
+            console.error(`Failed to initialize ${serviceName}:`, result.reason);
+          }
+        });
+      } catch (error) {
+        console.error('Critical initialization failed:', error);
+        // Could show an error UI here if needed
       }
-
-      // Continue initializing the rest in parallel
-      await Promise.all([
-        (async () => { await loadTasks(); })(),
-        (async () => { await setupNotifications(); })(),
-        (async () => { await setupMidnightClear(); })(),
-        (async () => { await setupSummaryScheduler(); })(),
-        (async () => { await generateForDate(DateTime.local()); })(),
-        (async () => { await setupGlobalHotkey(() => setIsQuickAddOpen(true)); })(),
-      ]);
     };
     
-    init().catch(console.error);
+    init();
+    initialized.current = true;
     
-    // Update date at midnight
-    const interval = setInterval(() => {
-      setCurrentDate(DateTime.local().toFormat("EEEE, MMMM d, yyyy"));
+    // Update date at midnight (only if component is still mounted)
+    dateInterval = setInterval(() => {
+      if (mounted) {
+        const newDate = DateTime.local().toFormat("EEEE, MMMM d, yyyy");
+        setCurrentDate(prev => prev !== newDate ? newDate : prev); // Only update if changed
+      }
     }, 60000); // Check every minute
     
     // Cleanup on unmount
     return () => {
-      cleanupGlobalHotkey();
-      stopSummaryScheduler();
-      clearInterval(interval);
+      mounted = false;
+      if (dateInterval) clearInterval(dateInterval);
+      
+      // Cleanup services (with error handling)
+      try { cleanupGlobalHotkey(); } catch (e) { console.error('Failed to cleanup hotkey:', e); }
+      try { stopSummaryScheduler(); } catch (e) { console.error('Failed to stop scheduler:', e); }
+      try { useThemeStore.getState().cleanup(); } catch (e) { console.error('Failed to cleanup theme:', e); }
     };
-  }, [initTheme, loadTasks, loadSettings]);
+  }, [initTheme, loadTasks, loadSettings]); // Keep necessary dependencies
 
 
   return (

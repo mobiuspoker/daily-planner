@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { getCurrentWindow } from "@tauri-apps/api/window";
+import { UnlistenFn } from "@tauri-apps/api/event";
 
 type Theme = "light" | "dark";
 type ThemeMode = "auto" | "light" | "dark";
@@ -6,15 +8,18 @@ type ThemeMode = "auto" | "light" | "dark";
 interface ThemeStore {
   theme: Theme;
   themeMode: ThemeMode;
+  unlistener: UnlistenFn | null;
   initTheme: () => Promise<void>;
   toggleTheme: () => Promise<void>;
   setTheme: (theme: Theme) => void;
   setThemeMode: (mode: ThemeMode) => Promise<void>;
+  cleanup: () => void;
 }
 
 export const useThemeStore = create<ThemeStore>((set, get) => ({
   theme: "light",
   themeMode: "auto",
+  unlistener: null,
   
   initTheme: async () => {
     // Fast bootstrap: use localStorage or system preference without waiting on DB
@@ -28,24 +33,44 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
 
     set({ themeMode: bootMode });
 
-    const prefersDarkMql = window.matchMedia("(prefers-color-scheme: dark)");
-    const prefersDark = prefersDarkMql.matches;
-    const bootTheme: Theme = bootMode === "auto" ? (prefersDark ? "dark" : "light") : (bootMode as Theme);
+    // Try to use Tauri's native theme detection first
+    let bootTheme: Theme = "light";
+    try {
+      const appWindow = getCurrentWindow();
+      const tauriTheme = await appWindow.theme();
+      if (bootMode === "auto") {
+        bootTheme = tauriTheme || "light";
+      } else {
+        bootTheme = bootMode as Theme;
+      }
+      
+      // Listen for Tauri theme changes
+      const unlistener = await appWindow.onThemeChanged(({ payload: theme }) => {
+        if (get().themeMode === "auto" && theme) {
+          set({ theme });
+          document.documentElement.setAttribute("data-theme", theme);
+        }
+      });
+      set({ unlistener });
+    } catch {
+      // Fallback to browser API if Tauri is not available
+      const prefersDarkMql = window.matchMedia("(prefers-color-scheme: dark)");
+      const prefersDark = prefersDarkMql.matches;
+      bootTheme = bootMode === "auto" ? (prefersDark ? "dark" : "light") : (bootMode as Theme);
+      
+      // Listen for system theme changes while in auto mode
+      const onSystemThemeChange = (e: MediaQueryListEvent) => {
+        if (get().themeMode === "auto") {
+          const newTheme = e.matches ? "dark" : "light";
+          set({ theme: newTheme });
+          document.documentElement.setAttribute("data-theme", newTheme);
+        }
+      };
+      try { prefersDarkMql.addEventListener("change", onSystemThemeChange); } catch {}
+    }
 
     set({ theme: bootTheme });
     document.documentElement.setAttribute("data-theme", bootTheme);
-
-    // Listen for system theme changes while in auto mode
-    const onSystemThemeChange = (e: MediaQueryListEvent) => {
-      if (get().themeMode === "auto") {
-        const newTheme = e.matches ? "dark" : "light";
-        set({ theme: newTheme });
-        document.documentElement.setAttribute("data-theme", newTheme);
-      }
-    };
-    try { prefersDarkMql.addEventListener("change", onSystemThemeChange); } catch {}
-
-    // No DB reconciliation; localStorage is the source of truth at startup
   },
   
   toggleTheme: async () => {
@@ -70,8 +95,16 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     
     let theme: Theme;
     if (mode === "auto") {
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      theme = prefersDark ? "dark" : "light";
+      // Try Tauri API first
+      try {
+        const appWindow = getCurrentWindow();
+        const tauriTheme = await appWindow.theme();
+        theme = tauriTheme || "light";
+      } catch {
+        // Fallback to browser API
+        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+        theme = prefersDark ? "dark" : "light";
+      }
     } else {
       theme = mode as Theme;
     }
@@ -79,7 +112,14 @@ export const useThemeStore = create<ThemeStore>((set, get) => ({
     set({ theme });
     document.documentElement.setAttribute("data-theme", theme);
     try { localStorage.setItem("themeMode", mode); } catch {}
-    // Do not persist to DB; avoid async I/O at boot and race conditions
+  },
+  
+  cleanup: () => {
+    const { unlistener } = get();
+    if (unlistener) {
+      unlistener();
+      set({ unlistener: null });
+    }
   }
 }));
 

@@ -9,7 +9,8 @@
   justify-content: center;
   background-color: var(--color-bg);
   z-index: 10000;
-  animation: fadeIn 0.3s ease-in-out;
+  opacity: 1;
+  transition: none;
 }
 
 /* Dark/light handled via CSS vars */

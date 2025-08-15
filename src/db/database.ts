@@ -1,13 +1,22 @@
 import Database from "@tauri-apps/plugin-sql";
 
 let db: Database | null = null;
+let isInitialized = false;
 
 export async function initializeDatabase(): Promise<void> {
+  // Prevent double initialization
+  if (isInitialized) {
+    console.warn('Database already initialized');
+    return;
+  }
+  
   try {
     db = await Database.load("sqlite:tasks.db");
     await runMigrations();
+    isInitialized = true;
   } catch (error) {
     console.error("Failed to initialize database:", error);
+    db = null; // Reset on failure
     throw error;
   }
 }
@@ -15,8 +24,12 @@ export async function initializeDatabase(): Promise<void> {
 async function runMigrations(): Promise<void> {
   if (!db) throw new Error("Database not initialized");
 
-  // Create tasks table
-  await db.execute(`
+  // Run migrations in a transaction for atomicity
+  try {
+    await db.execute('BEGIN TRANSACTION');
+    
+    // Create tasks table
+    await db.execute(`
     CREATE TABLE IF NOT EXISTS tasks (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
@@ -84,9 +97,17 @@ async function runMigrations(): Promise<void> {
     CREATE INDEX IF NOT EXISTS idx_recurring_enabled_cadence 
     ON recurring_rules(enabled, cadence_type)
   `);
+  
+    await db.execute('COMMIT');
+  } catch (error) {
+    await db.execute('ROLLBACK');
+    throw error;
+  }
 }
 
 export function getDatabase(): Database {
-  if (!db) throw new Error("Database not initialized");
+  if (!db || !isInitialized) {
+    throw new Error("Database not initialized. Call initializeDatabase() first.");
+  }
   return db;
 }
