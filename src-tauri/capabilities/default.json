@@ -33,8 +33,18 @@
     "fs:allow-write-text-file",
     "fs:allow-read-text-file",
     "fs:allow-mkdir",
+    "fs:allow-read-dir",
+    "fs:allow-remove",
     "fs:allow-appdata-write-recursive",
     "fs:allow-appdata-read-recursive",
+    {
+      "identifier": "fs:scope",
+      "allow": [
+        { "path": "$APPDATA/**" },
+        { "path": "$DOCUMENT/**" },
+        { "path": "$HOME/**" }
+      ]
+    },
     "dialog:default",
     "http:default",
     "http:allow-fetch",

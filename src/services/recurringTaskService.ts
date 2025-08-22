@@ -198,14 +198,16 @@ export async function generateForDate(localDate: DateTime): Promise<{ created: n
         continue;
       }
       
-      // Check for existing incomplete task with same title in TODAY
+      // Check for ANY existing task (completed or incomplete) with same title in TODAY
+      // This prevents creating duplicates when a recurring task has already been completed
       const existing = await db.select<any[]>(
-        "SELECT id FROM tasks WHERE upper(list) = 'TODAY' AND upper(title) = upper(?) AND (completed = 0 OR completed IS NULL)",
+        "SELECT id, completed FROM tasks WHERE upper(list) = 'TODAY' AND upper(title) = upper(?)",
         [rule.title]
       );
       
       if (existing.length > 0) {
-        console.log(`Skipping "${rule.title}" - incomplete task already exists`);
+        const status = existing[0].completed ? 'completed' : 'incomplete';
+        console.log(`Skipping "${rule.title}" - ${status} task already exists`);
         skipped++;
         continue;
       }

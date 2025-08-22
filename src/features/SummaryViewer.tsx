@@ -78,13 +78,26 @@ export const SummaryViewer: React.FC = () => {
         // Auto-clear message after 5 seconds
         setTimeout(() => setMessage(null), 5000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating weekly summary:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to generate weekly summary.';
+      if (error?.message) {
+        if (error.message.includes('Settings >') || error.message.includes('Cannot')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('forbidden path')) {
+          errorMessage = 'Cannot access the summary folder. Please check Settings > Summary Destination Folder.';
+        } else {
+          errorMessage = `Failed to generate summary: ${error.message}`;
+        }
+      }
+      
       setMessage({ 
-        text: 'Failed to generate weekly summary. Please try again.', 
+        text: errorMessage, 
         type: 'warning' 
       });
-      setTimeout(() => setMessage(null), 5000);
+      setTimeout(() => setMessage(null), 8000); // Longer timeout for detailed errors
     } finally {
       setIsLoading(false);
     }
@@ -106,13 +119,26 @@ export const SummaryViewer: React.FC = () => {
         // Auto-clear message after 5 seconds
         setTimeout(() => setMessage(null), 5000);
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error generating monthly summary:', error);
+      
+      // Provide more specific error messages
+      let errorMessage = 'Failed to generate monthly summary.';
+      if (error?.message) {
+        if (error.message.includes('Settings >') || error.message.includes('Cannot')) {
+          errorMessage = error.message;
+        } else if (error.message.includes('forbidden path')) {
+          errorMessage = 'Cannot access the summary folder. Please check Settings > Summary Destination Folder.';
+        } else {
+          errorMessage = `Failed to generate summary: ${error.message}`;
+        }
+      }
+      
       setMessage({ 
-        text: 'Failed to generate monthly summary. Please try again.', 
+        text: errorMessage, 
         type: 'warning' 
       });
-      setTimeout(() => setMessage(null), 5000);
+      setTimeout(() => setMessage(null), 8000); // Longer timeout for detailed errors
     } finally {
       setIsLoading(false);
     }

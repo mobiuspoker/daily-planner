@@ -35,8 +35,16 @@ export async function getDestinationFolder(): Promise<string> {
 async function ensureFolderExists(folderPath: string): Promise<void> {
   try {
     await mkdir(folderPath, { recursive: true });
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error creating folder:', error);
+    // If it's a permission error, throw with a more descriptive message
+    if (error?.message?.includes('forbidden path') || error?.message?.includes('not allowed')) {
+      throw new Error(`Cannot access folder: ${folderPath}. Please check Settings > Summary Destination Folder and ensure the path is valid.`);
+    }
+    // Re-throw other errors
+    if (error?.code !== 'EEXIST' && !error?.message?.includes('already exists')) {
+      throw error;
+    }
   }
 }
 
@@ -176,12 +184,25 @@ export async function generateWeeklySummary(reference: Date = new Date()): Promi
   const plainMarkdown = await generateMarkdown(startISO, endISO, 'weekly', dateRange, aiSummary);
   
   const folder = await getDestinationFolder();
-  await ensureFolderExists(folder);
+  
+  try {
+    await ensureFolderExists(folder);
+  } catch (error: any) {
+    // Re-throw with more context
+    throw new Error(`Failed to create summary folder: ${error.message || error}`);
+  }
   
   const fileName = `weekly-${weekNumber}.md`;
   const filePath = `${folder}/${fileName}`;
   
-  await writeTextFile(filePath, plainMarkdown);
+  try {
+    await writeTextFile(filePath, plainMarkdown);
+  } catch (error: any) {
+    if (error?.message?.includes('forbidden path') || error?.message?.includes('not allowed')) {
+      throw new Error(`Cannot write to: ${filePath}. Please check Settings > Summary Destination Folder.`);
+    }
+    throw error;
+  }
   
   await sendNotification({
     title: 'Weekly Summary Generated',
@@ -225,12 +246,25 @@ export async function generateMonthlySummary(reference: Date = new Date()): Prom
   const plainMarkdown = await generateMarkdown(startISO, endISO, 'monthly', dateRange, aiSummary);
   
   const folder = await getDestinationFolder();
-  await ensureFolderExists(folder);
+  
+  try {
+    await ensureFolderExists(folder);
+  } catch (error: any) {
+    // Re-throw with more context
+    throw new Error(`Failed to create summary folder: ${error.message || error}`);
+  }
   
   const fileName = `monthly-${monthId}.md`;
   const filePath = `${folder}/${fileName}`;
   
-  await writeTextFile(filePath, plainMarkdown);
+  try {
+    await writeTextFile(filePath, plainMarkdown);
+  } catch (error: any) {
+    if (error?.message?.includes('forbidden path') || error?.message?.includes('not allowed')) {
+      throw new Error(`Cannot write to: ${filePath}. Please check Settings > Summary Destination Folder.`);
+    }
+    throw error;
+  }
   
   await sendNotification({
     title: 'Monthly Summary Generated',

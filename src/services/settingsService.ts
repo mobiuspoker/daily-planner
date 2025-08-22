@@ -14,7 +14,8 @@ type SettingKey =
   | "summaryWeeklyDay" // 1=Mon..6=Sat, 0=Sun
   | "summaryMonthlyDay" // 1..28 or -1 for last day
   | "summaryTime" // "HH:mm"
-  | "summaryDestinationFolder";
+  | "summaryDestinationFolder"
+  | "lastMidnightClear"; // ISO date string of last midnight clear
 
 const DEFAULT_SETTINGS: Partial<Record<SettingKey, any>> = {
   themeMode: "auto",

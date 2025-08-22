@@ -15,6 +15,7 @@ export async function getTasks(list?: TaskList): Promise<Task[]> {
   const params = list ? [list] : [];
   const result = await db.select<any[]>(query, params);
   
+  
   return result.map(row => ({
     id: row.id,
     title: row.title,
