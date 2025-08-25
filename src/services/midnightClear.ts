@@ -168,8 +168,8 @@ async function checkAndPerformMissedClears() {
     // Check if we missed any days
     const daysMissed = Math.floor(today.diff(lastClearDate, 'days').days);
     
-    if (daysMissed > 1) {
-      console.log(`App was closed for ${daysMissed - 1} days. Performing missed midnight clear.`);
+    if (daysMissed >= 1) {
+      console.log(`Checking for missed midnight clear (${daysMissed} day${daysMissed === 1 ? '' : 's'} since last clear).`);
       
       // Get all completed tasks that should have been cleared
       const db = getDatabase();
@@ -183,16 +183,14 @@ async function checkAndPerformMissedClears() {
         await performMidnightClear(today.minus({ days: 1 }));
         
         await sendNotification({
-          title: "Missed Daily Clears Processed",
-          body: `App was closed for ${daysMissed - 1} day${daysMissed === 2 ? '' : 's'}. Completed tasks have been archived.`,
+          title: "Missed Daily Clear Processed",
+          body: `Found ${completedTasks.length} completed task${completedTasks.length === 1 ? '' : 's'} from previous day${daysMissed > 1 ? 's' : ''}. Tasks have been archived.`,
         });
       } else {
         // Update the last clear date even if no tasks to clear
         await setSetting('lastMidnightClear', today.minus({ days: 1 }).toISODate());
         console.log('No completed tasks to clear from missed days');
       }
-    } else if (daysMissed === 1) {
-      console.log('App started on a new day, no missed clears');
     } else {
       console.log('App already cleared today');
     }
