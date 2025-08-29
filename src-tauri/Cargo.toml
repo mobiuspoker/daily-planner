@@ -1,6 +1,6 @@
 [package]
 name = "daily-planner"
-version = "0.1.5"
+version = "1.0.0"
 description = "A minimalist daily planner with paper aesthetic"
 authors = ["you"]
 edition = "2021"
