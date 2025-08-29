@@ -10,8 +10,9 @@ import {
   FileText,
   Repeat
 } from "lucide-react";
-import { open } from "@tauri-apps/plugin-shell";
+import { Command } from "@tauri-apps/plugin-shell";
 import { mkdir } from "@tauri-apps/plugin-fs";
+import { platform } from "@tauri-apps/plugin-os";
 import { appDataDir } from "@tauri-apps/api/path";
 import { exportData, importData } from "../services/importExportService";
 import { useSettingsStore } from "../state/settingsStore";
@@ -73,8 +74,11 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
   const openDataFolder = async () => {
     try {
       const dataDir = await appDataDir();
-      // Open folder using shell open (works on all platforms)
-      await open(dataDir);
+      // Open folder via OS opener command
+      const os = await platform();
+      const opener = os === "windows" ? "explorer" : (os === "macos" ? "open" : "xdg-open");
+      const cmd = new Command(opener, [dataDir]);
+      await cmd.execute();
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to open data folder:", error);
@@ -98,8 +102,10 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
         // Folder might already exist, that's fine
       }
       
-      // Open folder using shell open (works on all platforms)
-      await open(summariesPath);
+      const os = await platform();
+      const opener = os === "windows" ? "explorer" : (os === "macos" ? "open" : "xdg-open");
+      const cmd = new Command(opener, [summariesPath]);
+      await cmd.execute();
       setIsOpen(false);
     } catch (error) {
       console.error("Failed to open summaries folder:", error);

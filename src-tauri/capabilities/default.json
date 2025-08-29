@@ -58,6 +58,8 @@
           "url": "https://api.anthropic.com/**"
         }
       ]
-    }
+    },
+    "shell:default",
+    "shell:allow-open"
   ]
 }

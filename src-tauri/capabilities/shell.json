@@ -4,12 +4,23 @@
   "description": "Shell scope for opening folders",
   "windows": ["main"],
   "permissions": [
+    "shell:allow-open",
     {
       "identifier": "shell:allow-execute",
       "allow": [
         {
           "name": "explorer",
           "cmd": "explorer",
+          "args": true
+        },
+        {
+          "name": "open",
+          "cmd": "open",
+          "args": true
+        },
+        {
+          "name": "xdg-open",
+          "cmd": "xdg-open",
           "args": true
         }
       ]
