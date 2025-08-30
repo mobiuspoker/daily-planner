@@ -77,7 +77,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
       // Open folder via OS opener command
       const os = await platform();
       const opener = os === "windows" ? "explorer" : (os === "macos" ? "open" : "xdg-open");
-      const cmd = new Command(opener, [dataDir]);
+      const cmd = Command.create(opener, [dataDir]);
       await cmd.execute();
       setIsOpen(false);
     } catch (error) {
@@ -104,7 +104,7 @@ export function AppMenu({ onOpenHistory, onOpenSummaries, onOpenSettings, onOpen
       
       const os = await platform();
       const opener = os === "windows" ? "explorer" : (os === "macos" ? "open" : "xdg-open");
-      const cmd = new Command(opener, [summariesPath]);
+      const cmd = Command.create(opener, [summariesPath]);
       await cmd.execute();
       setIsOpen(false);
     } catch (error) {
